@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">NutriFind</string>
+    <string name="search_foods_drinks">search foods, drinks, ...</string>
+    <string name="massage_top_home_screen_subtitle_line1">Discover what ingredients are in your food\n</string>
+    <string name="massage_top_home_screen_subtitle_line2">and learn about nutrition al values.</string>
+    <string name="massage_top_home_screen_title">What\'s in my meal?</string>
+    <string name="clear">clear</string>
+    <string name="recent_searches">Recent Searches</string>
 </resources>
