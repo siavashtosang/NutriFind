@@ -6,4 +6,11 @@
     <string name="massage_top_home_screen_title">What\'s in my meal?</string>
     <string name="clear">clear</string>
     <string name="recent_searches">Recent Searches</string>
+    <string name="more">More</string>
+    <string name="calories">%1$s Calories</string>
+    <string name="ingredient">%1$s Ingredient</string>
+    <string name="view_all">View All</string>
+    <string name="new_in">New in %1$s</string>
+    <string name="favorite_dishes">Favorite Dishes</string>
+    <string name="diets">Diets</string>
 </resources>
