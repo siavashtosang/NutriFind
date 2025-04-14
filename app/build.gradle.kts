@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kapt)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -39,10 +40,14 @@ android {
     buildFeatures {
         compose = true
     }
+
 }
 
 dependencies {
 
+    implementation(libs.androidx.annotation)
+    implementation(libs.androidx.annotation.experimental)
+    androidTestImplementation(libs.androidx.annotation)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -59,10 +64,15 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation(libs.converter.moshi)
-    implementation(libs.retrofit)
-    implementation(libs.moshi)
+    implementation(libs.androidx.profileinstaller)
+    implementation(libs.kotlinx.serialization.json)
 
+
+    implementation(libs.retrofit.converter)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter)
+    implementation(libs.okhttp)
+    implementation(libs.coil)
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
 
