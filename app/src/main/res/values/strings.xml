@@ -1,16 +1,27 @@
 <resources>
     <string name="app_name">NutriFind</string>
-    <string name="search_foods_drinks">search foods, drinks, ...</string>
+    <string name="search_foods_drinks">search foods, drinks, …</string>
     <string name="massage_top_home_screen_subtitle_line1">Discover what ingredients are in your food\n</string>
     <string name="massage_top_home_screen_subtitle_line2">and learn about nutrition al values.</string>
     <string name="massage_top_home_screen_title">What\'s in my meal?</string>
     <string name="clear">clear</string>
     <string name="recent_searches">Recent Searches</string>
     <string name="more">More</string>
-    <string name="calories">%1$s Calories</string>
-    <string name="ingredient">%1$s Ingredient</string>
     <string name="view_all">View All</string>
     <string name="new_in">New in %1$s</string>
     <string name="favorite_dishes">Favorite Dishes</string>
     <string name="diets">Diets</string>
+    <string name="food_category">Food Category</string>
+    <string name="search_time_icon">Search Time Icon</string>
+    <string name="navigate_to_search">Navigate to Search</string>
+    <string name="no_recent_searches">No recent searches</string>
+    <string name="search_by_food_names">Search by food names</string>
+    <string name="you_haven_t_search_anything_yet">You haven’t search anything yet</string>
+    <string name="search_results_for">Search Results for \'%1$s\'</string>
+    <string name="back">back</string>
+    <string name="error">Error</string>
+    <string name="loading">Loading</string>
+    <string name="ingredient">%1$s Ingredient</string>
+    <string name="calories">Calories %1$s</string>
+    <string name="ingredients">Ingredients %1$s</string>
 </resources>
