@@ -19,6 +19,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "BASE_URL", "\"https://api.edamam.com/\"")
+        buildConfigField("String", "APP_ID", "\"aeff32ad\"")
+        buildConfigField("String", "APP_KEY", "\"b5a9932ceec96638ae9e30ea128926ba\"")
     }
 
     buildTypes {
@@ -39,6 +43,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
 }
@@ -80,4 +85,6 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.androidx.google.font)
+
+    implementation(libs.androidx.datastore)
 }
