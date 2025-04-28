@@ -5,6 +5,6 @@ import com.example.nutrifind.data.model.ApiEdamam
 
 sealed class DataResponse {
     data class Success(val apiEdamam: ApiEdamam?) : DataResponse()
-    data object Error : DataResponse()
+    data class Error(val message: String = "") : DataResponse()
     data object Loading : DataResponse()
 }

@@ -108,7 +108,7 @@ data class TotalNutrients(
     @SerializedName("CHOCDF.net") var chocdfNet: CHOCDFNet? = CHOCDFNet(),
     @SerializedName("FIBTG") var fibtg: FIBTG? = FIBTG(),
     @SerializedName("SUGAR") var sugar: SUGAR? = SUGAR(),
-    @SerializedName("PROCNT") var poncnt: PROCNT? = PROCNT(),
+    @SerializedName("PROCNT") var procnt: PROCNT? = PROCNT(),
     @SerializedName("CHOLE") var chole: CHOLE? = CHOLE(),
     @SerializedName("NA") var na: NA? = NA(),
     @SerializedName("CA") var ca: CA? = CA(),
