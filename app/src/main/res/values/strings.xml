@@ -8,7 +8,7 @@
     <string name="recent_searches">Recent Searches</string>
     <string name="more">More</string>
     <string name="view_all">View All</string>
-    <string name="new_in">New in %1$s</string>
+    <string name="new_in_with_right_value">New in %1$s</string>
     <string name="favorite_dishes">Favorite Dishes</string>
     <string name="diets">Diets</string>
     <string name="food_category">Food Category</string>
@@ -21,7 +21,23 @@
     <string name="back">back</string>
     <string name="error">Error</string>
     <string name="loading">Loading</string>
-    <string name="ingredient">%1$s Ingredient</string>
-    <string name="calories">Calories %1$s</string>
-    <string name="ingredients">Ingredients %1$s</string>
+    <string name="ingredients_with__left_value">%1$s Ingredient</string>
+    <string name="ingredients_with__right_value">Ingredients %1$s</string>
+    <string name="filters">Filters</string>
+    <string name="dish_type">Dish Type</string>
+    <string name="meal_types">Meal Types</string>
+    <string name="filter">Filter</string>
+    <string name="cuisine_types">Cuisine Types</string>
+    <string name="select_cuisine">Select Cuisine</string>
+    <string name="all">All</string>
+    <string name="go_back">Go Back</string>
+    <string name="calories">calories</string>
+    <string name="daily_value">daily value</string>
+    <string name="nutrition">Nutrition</string>
+    <string name="amount">Amount</string>
+    <string name="serving">Serving</string>
+    <string name="food_recipe">Food Recipe</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="appearance">Appearance</string>
+    <string name="dark_mode">Dark Mode</string>
 </resources>
