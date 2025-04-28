@@ -1,5 +1,6 @@
 package com.example.nutrifind.data.network
 
+import com.example.nutrifind.BuildConfig
 import com.example.nutrifind.data.model.ApiEdamam
 import dagger.Module
 import dagger.Provides
@@ -10,10 +11,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
-object Constant {
-    const val BASE_URL = "https://api.edamam.com/"
+object NetworkConfig {
+    const val READ_TIMEOUT_SECONDS = 60L
+    const val CONNECT_TIMEOUT_SECONDS = 60L
 }
 
 @Module
@@ -26,8 +29,8 @@ class NetworkModule {
     fun provideHttpClient(): OkHttpClient {
         return OkHttpClient
             .Builder()
-            .readTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
-            .connectTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(NetworkConfig.READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .connectTimeout(NetworkConfig.CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .build()
     }
 
@@ -37,7 +40,7 @@ class NetworkModule {
         okHttpClient: OkHttpClient,
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(Constant.BASE_URL)
+            .baseUrl(BuildConfig.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -51,12 +54,18 @@ class NetworkModule {
 }
 
 interface ApiService {
+
     @GET("api/recipes/v2")
     suspend fun getFoods(
-        @Query("type") type: String,
+        @Query("type") type: String = "public",
         @Query("q") searchFood: String,
-        @Query("app_id") app_id: String,
-        @Query("app_key") app_key: String
+        @Query("app_id") appId: String = BuildConfig.APP_ID,
+        @Query("app_key") appKey: String = BuildConfig.APP_KEY,
+        @Query("diet") dietFilter: String?,
+        @Query("dishType") dishTypeFilter: String?,
+        @Query("mealType") mealTypeFilter: String?,
+        @Query("cuisineType") cuisineTypeFilter: String?
     ): ApiEdamam
 }
+
 
