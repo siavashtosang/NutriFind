@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -24,7 +25,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.nutrifind.R
 import com.example.nutrifind.data.offline.foodCategoryItems
-import com.example.nutrifind.ui.NutriFindViewModel
 import com.example.nutrifind.ui.component.FoodCategoryCard
 import com.example.nutrifind.ui.component.NutriFindTopAppBar
 import com.example.nutrifind.ui.theme.NutriFindTheme
@@ -32,18 +32,14 @@ import com.example.nutrifind.ui.theme.NutriFindTheme
 @Composable
 fun CategoryItemsScreenRout(
     modifier: Modifier = Modifier,
-    viewModel: NutriFindViewModel,
+    onCategoryItemClick: (String) -> Unit,
     onBackClick: () -> Unit,
-    navigateToCategoryResults: () -> Unit,
 ) {
 
     CategoryItemsScreen(
         modifier = modifier,
-        onCategorySearched = {
-            viewModel.onCategorySearched(it)
-            navigateToCategoryResults()
-        },
         onBackClick = onBackClick,
+        onCategoryItemClick = onCategoryItemClick,
     )
 }
 
@@ -51,7 +47,7 @@ fun CategoryItemsScreenRout(
 @Composable
 private fun CategoryItemsScreen(
     modifier: Modifier = Modifier,
-    onCategorySearched: (String) -> Unit,
+    onCategoryItemClick: (String) -> Unit,
     onBackClick: () -> Unit,
 ) {
     val scrollState = rememberLazyGridState()
@@ -88,7 +84,7 @@ private fun CategoryItemsScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
 
-            item {
+            item(span = { GridItemSpan(3) }) {
                 Text(
                     stringResource(R.string.food_category),
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight(713)),
@@ -99,7 +95,7 @@ private fun CategoryItemsScreen(
                 FoodCategoryCard(title = category.title,
                     image = category.image,
                     onClick = {
-                        onCategorySearched(category.title)
+                        onCategoryItemClick(category.title)
                     }
                 )
             }
@@ -108,18 +104,13 @@ private fun CategoryItemsScreen(
     }
 }
 
-enum class CategoryTopAppBarState {
-    Extend, Collapse
-}
-
-
 @Preview
 @Composable
 private fun PreviewCategoryScreen() {
     NutriFindTheme {
         CategoryItemsScreen(
             onBackClick = {},
-            onCategorySearched = {}
+            onCategoryItemClick = {}
         )
     }
 }

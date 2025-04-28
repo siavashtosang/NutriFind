@@ -20,12 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.nutrifind.R
 import com.example.nutrifind.data.model.Hits
 import com.example.nutrifind.data.network.DataResponse
 import com.example.nutrifind.data.offline.fakeFoodData
-import com.example.nutrifind.ui.NutriFindViewModel
 import com.example.nutrifind.ui.component.HorizontalFoodCard
 import com.example.nutrifind.ui.component.NutriFindTopAppBar
 import kotlin.math.roundToInt
@@ -33,16 +33,16 @@ import kotlin.math.roundToInt
 @Composable
 fun CategoryResultsScreenRout(
     modifier: Modifier = Modifier,
-    viewModel: NutriFindViewModel,
-    onFoodCardClick: (String?) -> Unit,
+    viewModel: CategoryViewModel = hiltViewModel(),
+    onFoodCardClick: (String) -> Unit,
     onBack: () -> Unit
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 
-    when (uiState.searchedResults) {
-        DataResponse.Error -> {
+    when (uiState.results) {
+        is DataResponse.Error -> {
             //TODO Error Screen
             Text(stringResource(R.string.error))
         }
@@ -56,7 +56,7 @@ fun CategoryResultsScreenRout(
             CategoryResultsScreen(
                 modifier = modifier,
                 title = uiState.categoryResultsScreenTitle,
-                results = (uiState.searchedResults as DataResponse.Success).apiEdamam?.hits,
+                results = (uiState.results as DataResponse.Success).apiEdamam?.hits,
                 onFoodCardClick = onFoodCardClick,
                 onBack = onBack
             )
@@ -72,7 +72,7 @@ private fun CategoryResultsScreen(
     modifier: Modifier = Modifier,
     title: String,
     results: List<Hits>?,
-    onFoodCardClick: (String?) -> Unit,
+    onFoodCardClick: (String) -> Unit,
     onBack: () -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
@@ -119,7 +119,7 @@ private fun CategoryResultsScreen(
                     image = hits.recipe?.images?.thumbnail?.url ?: "",
                     calories = hits.recipe?.calories?.roundToInt() ?: 0,
                     ingredients = hits.recipe?.ingredientLines?.size ?: 0,
-                    onClick = { onFoodCardClick(hits.recipe?.uri) }
+                    onClick = { onFoodCardClick(hits.recipe?.label!!) }
                 )
 
             }

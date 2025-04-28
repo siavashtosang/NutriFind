@@ -3,17 +3,19 @@ package com.example.nutrifind.ui.features.category
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.example.nutrifind.ui.NutriFindViewModel
+import com.example.nutrifind.data.model.Hits
 import kotlinx.serialization.Serializable
 
 @Serializable
 object ScreenCategoryItems
 
 @Serializable
-object ScreenCategoryResults
+data class ScreenCategoryResults(
+    val categoryTitle: String
+)
 
-fun NavController.navigateToCategoryResultsScreen() {
-    navigate(ScreenCategoryResults)
+fun NavController.navigateToCategoryResultsScreen(categoryTitle: String) {
+    navigate(ScreenCategoryResults(categoryTitle = categoryTitle))
 }
 
 fun NavController.navigateToCategoryItemsScreen() {
@@ -21,13 +23,11 @@ fun NavController.navigateToCategoryItemsScreen() {
 }
 
 fun NavGraphBuilder.categoryResultsScreen(
-    viewModel: NutriFindViewModel,
-    onFoodCardClick: (String?) -> Unit,
+    onFoodCardClick: (String) -> Unit,
     onBackClick: () -> Unit
 ) {
     composable<ScreenCategoryResults> {
         CategoryResultsScreenRout(
-            viewModel = viewModel,
             onFoodCardClick = onFoodCardClick,
             onBack = onBackClick,
         )
@@ -35,15 +35,13 @@ fun NavGraphBuilder.categoryResultsScreen(
 }
 
 fun NavGraphBuilder.categoryItemsScreen(
-    viewModel: NutriFindViewModel,
     onBackClick: () -> Unit,
-    navigateToCategoryResults: () -> Unit,
+    onCategoryItemClick: (String) -> Unit,
 ) {
     composable<ScreenCategoryItems> {
         CategoryItemsScreenRout(
-            viewModel = viewModel,
             onBackClick = onBackClick,
-            navigateToCategoryResults = navigateToCategoryResults
+            onCategoryItemClick = onCategoryItemClick
         )
     }
 }
