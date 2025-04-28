@@ -19,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import com.example.nutrifind.data.model.Hits
 import com.example.nutrifind.data.offline.fakeFoodData
 import com.example.nutrifind.data.offline.topFoods
 import com.example.nutrifind.data.network.DataResponse
@@ -33,7 +34,7 @@ fun TopFoodCard(
     saladList: DataResponse,
     pizzaList: DataResponse,
     chineseList: DataResponse,
-    onClick: (foodUri: String?) -> Unit,
+    onClick: (String) -> Unit,
 ) {
     val pagerState = rememberPagerState(pageCount = { 3 })
 
@@ -42,7 +43,7 @@ fun TopFoodCard(
         modifier = modifier
             .background(color = MaterialTheme.colorScheme.surfaceVariant),
         contentPadding = PaddingValues(horizontal = 16.dp),
-        ) { page: Int ->
+    ) { page: Int ->
 
         val pageOffset = (
                 (pagerState.currentPage - page)
@@ -88,7 +89,7 @@ fun TopFoodCard(
             when (page) {
                 0 -> {
                     when (saladList) {
-                        DataResponse.Error -> {
+                        is DataResponse.Error -> {
                             Text("Error")
                         }
 
@@ -104,7 +105,7 @@ fun TopFoodCard(
                                     image = food.recipe?.images?.thumbnail?.url ?: "",
                                     calories = food.recipe?.calories?.roundToInt() ?: 0,
                                     ingredients = food.recipe?.ingredientLines?.size ?: 0,
-                                    onClick = { onClick(food.recipe?.uri) }
+                                    onClick = { onClick(food.recipe?.label!!) }
                                 )
 
                             }
@@ -115,7 +116,7 @@ fun TopFoodCard(
                 1 -> {
                     when (pizzaList) {
 
-                        DataResponse.Error -> {
+                        is DataResponse.Error -> {
                             Text("Error")
                         }
 
@@ -131,7 +132,7 @@ fun TopFoodCard(
                                     image = food.recipe?.images?.thumbnail?.url ?: "",
                                     calories = food.recipe?.calories?.roundToInt() ?: 0,
                                     ingredients = food.recipe?.ingredientLines?.size ?: 0,
-                                    onClick = { onClick(food.recipe?.uri) }
+                                    onClick = { onClick(food.recipe?.label!!) }
                                 )
                             }
                         }
@@ -141,7 +142,7 @@ fun TopFoodCard(
                 2 -> {
                     when (chineseList) {
 
-                        DataResponse.Error -> {
+                        is DataResponse.Error -> {
                             Text("Error")
                         }
 
@@ -158,7 +159,7 @@ fun TopFoodCard(
                                     image = food.recipe?.images?.thumbnail?.url ?: "",
                                     calories = food.recipe?.calories?.roundToInt() ?: 0,
                                     ingredients = food.recipe?.ingredientLines?.size ?: 0,
-                                    onClick = { onClick(food.recipe?.uri) }
+                                    onClick = { onClick(food.recipe?.label!!) }
                                 )
                             }
                         }

@@ -3,25 +3,26 @@ package com.example.nutrifind
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.compose.rememberNavController
+import com.example.nutrifind.data.nutri_find_repository.repository.NutriFindRepository
+import com.example.nutrifind.data.nutri_find_repository.repository.UserPreferences
+import com.example.nutrifind.ui.NutriFindApp
 import com.example.nutrifind.ui.navigation.NutriFindNavHost
 import com.example.nutrifind.ui.theme.NutriFindTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity() : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            NutriFindTheme {
 
-                val navController = rememberNavController()
-
-                NutriFindNavHost(navController = navController)
-
-            }
+           NutriFindApp()
         }
     }
 }

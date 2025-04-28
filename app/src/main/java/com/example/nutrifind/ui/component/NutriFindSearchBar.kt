@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -31,9 +32,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.nutrifind.R
-import com.example.nutrifind.data.offline.fakeFoodData
 import com.example.nutrifind.data.model.Hits
-import com.example.nutrifind.ui.SearchedHistory
+import com.example.nutrifind.data.offline.fakeFoodData
+import com.example.nutrifind.ui.features.home.SearchedHistory
 import com.example.nutrifind.ui.theme.NutriFindTheme
 import kotlin.math.roundToInt
 
@@ -100,7 +101,10 @@ private fun SearchedHistoryHeader(onClearButtonClick: () -> Unit) {
 }
 
 @Composable
-private fun SearchedHistoryItem(searchedItem: SearchedHistory, onReUseSearchedHistory: (searchedText: String) -> Unit) {
+private fun SearchedHistoryItem(
+    searchedItem: SearchedHistory,
+    onReUseSearchedHistory: (searchedText: String) -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -185,38 +189,62 @@ fun SearchedHistoryEmptyState(modifier: Modifier = Modifier) {
 fun SearchResults(
     modifier: Modifier = Modifier,
     searchedFood: String,
+    filterItems: Int?,
     searchedResults: List<Hits>,
-    onSearchedFoodCardClick: (foodUri: String?) -> Unit
+    onSearchedFoodCardClick: (String) -> Unit,
+    onFilterButtonClick: () -> Unit
 ) {
-    Column(modifier = modifier) {
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .height(40.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.search_results_for, searchedFood),
-                style = MaterialTheme.typography.titleMedium,
-            )
-        }
 
-        LazyColumn(
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(searchedResults) { food ->
-                HorizontalFoodCard(
-                    title = food.recipe?.label ?: "",
-                    image = food.recipe?.images?.thumbnail?.url ?: "",
-                    calories = food.recipe?.calories?.roundToInt() ?: 0,
-                    ingredients = food.recipe?.ingredientLines?.size ?: 0,
-                    onClick = { onSearchedFoodCardClick(food.recipe?.uri) }
+    val gradientColor = listOf(Color.Transparent, MaterialTheme.colorScheme.background)
+
+    Box(
+        modifier = modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        Column(modifier = Modifier) {
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .height(40.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.search_results_for, searchedFood),
+                    style = MaterialTheme.typography.titleMedium,
                 )
             }
+
+            LazyColumn(
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(searchedResults) { food ->
+                    HorizontalFoodCard(
+                        title = food.recipe?.label ?: "",
+                        image = food.recipe?.images?.thumbnail?.url ?: "",
+                        calories = food.recipe?.calories?.roundToInt() ?: 0,
+                        ingredients = food.recipe?.ingredientLines?.size ?: 0,
+                        onClick = { onSearchedFoodCardClick(food.recipe?.label!!) }
+                    )
+                }
+            }
+        }
+
+        Box(
+            modifier = Modifier
+                .height(100.dp)
+                .fillMaxWidth()
+                .background(brush = Brush.verticalGradient(colors = gradientColor)),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            FilterButton(
+                modifier = Modifier.padding(bottom = 16.dp),
+                filterItems = filterItems,
+                onClick = onFilterButtonClick
+            )
         }
     }
-
 }
 
 @Preview(showBackground = true)
@@ -272,8 +300,10 @@ private fun PreviewSearchResults() {
     NutriFindTheme {
         SearchResults(
             searchedFood = "Pasta",
-            searchedResults = fakeFoodData.hits,
-            onSearchedFoodCardClick = {}
+            filterItems = 4,
+            searchedResults = fakeFoodData.hits + fakeFoodData.hits + fakeFoodData.hits,
+            onSearchedFoodCardClick = {},
+            onFilterButtonClick = {}
         )
     }
 }

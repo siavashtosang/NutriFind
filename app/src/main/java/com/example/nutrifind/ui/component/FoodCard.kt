@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -102,7 +101,7 @@ fun VerticalFoodCard(
             )
 
             Text(
-                text = stringResource(R.string.calories, calories),
+                text = "Calories $calories",
                 style = MaterialTheme.typography.labelSmall
                     .copy(
                         color = MaterialTheme.colorScheme.outline,
@@ -124,7 +123,7 @@ fun VerticalFoodCard(
             )
 
             Text(
-                text = stringResource(R.string.ingredients, ingredients),
+                text = stringResource(R.string.ingredients_with__right_value, ingredients),
                 style = MaterialTheme.typography.labelSmall
                     .copy(
                         color = MaterialTheme.colorScheme.outline,
@@ -230,7 +229,7 @@ fun HorizontalFoodCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = stringResource(calories, R.string.calories),
+                    text = "$calories Calories",
                     style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.outline),
                     textAlign = TextAlign.Center
                 )
@@ -244,7 +243,7 @@ fun HorizontalFoodCard(
 
 
                 Text(
-                    text = stringResource(R.string.ingredient, ingredients),
+                    text = stringResource(R.string.ingredients_with__left_value, ingredients),
                     style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.outline),
                     textAlign = TextAlign.Center
                 )

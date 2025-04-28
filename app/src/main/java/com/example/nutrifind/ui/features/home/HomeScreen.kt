@@ -1,10 +1,18 @@
 package com.example.nutrifind.ui.features.home
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,65 +21,85 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.nutrifind.R
 import com.example.nutrifind.data.model.Hits
 import com.example.nutrifind.data.network.DataResponse
 import com.example.nutrifind.data.offline.FoodCategoryItem
+import com.example.nutrifind.data.offline.TagFilterItem
 import com.example.nutrifind.data.offline.fakeFoodData
 import com.example.nutrifind.data.offline.foodCategoryItems
-import com.example.nutrifind.ui.NutriFindViewModel
-import com.example.nutrifind.ui.SearchedHistory
+import com.example.nutrifind.ui.component.CuisineTypesSheet
+import com.example.nutrifind.ui.component.FiltersSheet
 import com.example.nutrifind.ui.component.FoodCategoryCard
 import com.example.nutrifind.ui.component.MoreButtonCard
 import com.example.nutrifind.ui.component.SearchResults
 import com.example.nutrifind.ui.component.SearchedHistoryList
-import com.example.nutrifind.ui.component.TagFilter
 import com.example.nutrifind.ui.component.TopFoodCard
 import com.example.nutrifind.ui.component.VerticalFoodCard
 import com.example.nutrifind.ui.theme.NutriFindTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreenRote(
     modifier: Modifier = Modifier,
-    viewModel: NutriFindViewModel,
-    onCategoryItemClick: () -> Unit,
+    viewModel: HomeViewModel = hiltViewModel(),
+    onCategoryItemClick: (String) -> Unit,
+    onFoodCardClick: (String) -> Unit,
     onAllCategoriesClick: () -> Unit,
     onMoreCategoriesButtonClick: () -> Unit,
-    onFoodCardClick: (foodUri: String?) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     HomeScreen(
         modifier = modifier,
+        isDarkTheme = uiState.isDarkTheme,
         searchText = uiState.searchText,
         foodsSuggestionTitle = uiState.foodSuggestionTitle,
         isActiveSearchBar = uiState.isActiveSearchBar,
@@ -82,14 +110,24 @@ fun HomeScreenRote(
         salads = uiState.salads,
         pizzas = uiState.pizzas,
         chinese = uiState.chinese,
+        dietsFilterList = uiState.dietsFilters,
+        dishTypesFilterList = uiState.dishTypesFilters,
+        mealTypesFilterList = uiState.mealTypesFilters,
+        cuisineTypeList = uiState.cuisineTypeFilters,
+        selectedCuisineType = uiState.selectedCuisineType,
+        filterItems = uiState.filterItems,
+        onDietFilterClick = viewModel::onDietFilterClick,
+        onDishFilterClick = viewModel::onDishFilterClick,
+        onMealFilterCLick = viewModel::onMealFilterCLick,
+        onCuisineTypeClick = viewModel::onCuisineTypeFilterClick,
+        onClearAllFilterClick = viewModel::onClearAllFilterClick,
+        onApplyFilterClick = viewModel::onApplyFilterClick,
         onSearchTextChange = viewModel::onSearchTextChange,
         onActiveSearchBarChange = viewModel::onActiveSearchBarChange,
         onSearchTriggered = viewModel::onSearchTriggered,
         onClearSearchedHistoriesClick = viewModel::onClearSearchedHistoriesClick,
-        onCategoryItemClick = {
-            viewModel.onCategorySearched(it)
-            onCategoryItemClick()
-        },
+        onDarkThemeChange = viewModel::onDarkThemeChange,
+        onCategoryItemClick = onCategoryItemClick,
         onAllCategoriesClick = onAllCategoriesClick,
         onMoreCategoriesButtonClick = onMoreCategoriesButtonClick,
         onFoodCardClick = onFoodCardClick,
@@ -101,8 +139,11 @@ fun HomeScreenRote(
 fun HomeScreen(
     modifier: Modifier = Modifier,
     searchText: String,
+    isDarkTheme: Boolean,
     foodsSuggestionTitle: String,
+    selectedCuisineType: String,
     isActiveSearchBar: Boolean,
+    filterItems: Int?,
     searchedHistories: List<SearchedHistory>,
     suggestionFood: DataResponse,
     searchedResults: DataResponse,
@@ -110,55 +151,150 @@ fun HomeScreen(
     pizzas: DataResponse,
     chinese: DataResponse,
     favoriteDishes: List<Hits>,
+    dietsFilterList: List<TagFilterItem>,
+    dishTypesFilterList: List<TagFilterItem>,
+    mealTypesFilterList: List<TagFilterItem>,
+    cuisineTypeList: List<TagFilterItem>,
+    onDietFilterClick: (TagFilterItem) -> Unit,
+    onDishFilterClick: (TagFilterItem) -> Unit,
+    onMealFilterCLick: (TagFilterItem) -> Unit,
+    onCuisineTypeClick: (TagFilterItem) -> Unit,
+    onApplyFilterClick: () -> Unit,
+    onClearAllFilterClick: () -> Unit,
     onSearchTextChange: (String) -> Unit,
     onSearchTriggered: () -> Unit,
     onReUseSearchedHistory: (String) -> Unit,
-    onFoodCardClick: (foodUri: String?) -> Unit,
+    onFoodCardClick: (String) -> Unit,
     onActiveSearchBarChange: (Boolean) -> Unit,
     onClearSearchedHistoriesClick: () -> Unit,
     onCategoryItemClick: (categoryTitle: String) -> Unit,
+    onDarkThemeChange: (Boolean) -> Unit,
     onAllCategoriesClick: () -> Unit,
     onMoreCategoriesButtonClick: () -> Unit,
 ) {
 
-    Scaffold(
-        modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.background,
-    ) { paddingValues ->
+    val lazyListState = rememberLazyListState()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
 
-        val lazyListState = rememberLazyListState()
+    val scrollOffset by remember { derivedStateOf { lazyListState.firstVisibleItemScrollOffset } }
+    val visibilityItem by remember { derivedStateOf { lazyListState.firstVisibleItemIndex } }
 
-        if (isActiveSearchBar) {
-            HomeScreenSearchBar(
-                modifier = Modifier,
-                searchText = searchText,
-                isActiveSearchBar = isActiveSearchBar,
-                searchedHistory = searchedHistories,
-                searchedResults = searchedResults,
-                onSearchTextChange = onSearchTextChange,
-                onSearchTriggered = onSearchTriggered,
-                onFoodCardClick = onFoodCardClick,
-                onActiveSearchBarChange = onActiveSearchBarChange,
-                onClearSearchedHistoriesClick = onClearSearchedHistoriesClick,
-                onReUseSearchedHistory = onReUseSearchedHistory,
-            )
-        } else {
 
-            LazyColumn(
-                modifier = Modifier
-                    .padding(paddingValues),
-                state = lazyListState
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                Text(
+                    text = stringResource(R.string.appearance),
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier
+                        .padding(
+                            start = 16.dp, top = 36.dp, bottom = 8.dp
+                        )
+                )
+
+                HorizontalDivider()
+
+                Row(
+                    modifier = Modifier
+                        .padding(top = 4.dp, start = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        stringResource(R.string.dark_mode)
+                    )
+
+                    Checkbox(
+                        checked = isDarkTheme,
+                        onCheckedChange = onDarkThemeChange,
+                        modifier = Modifier.padding(horizontal = 2.dp)
+                    )
+                }
+            }
+        }
+    ) {
+        Scaffold(
+            modifier = modifier,
+            containerColor = MaterialTheme.colorScheme.background,
+        ) { paddingValues ->
+
+
+            BoxWithConstraints(
+                modifier = modifier
+                    .padding(paddingValues)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.TopStart
             ) {
-                item {
-                    TopScreenBanner()
+                val searchBarPadding = if (isActiveSearchBar) 0f else (maxHeight.value / 3f) * 0.89f
+                val bannerHeight = (maxHeight.value / 3f)
+                val contentPadding = (maxHeight.value / 3f) * 1.1f
+
+                val topBarAlpha: Float by animateFloatAsState(
+                    targetValue = if (visibilityItem == 0) (scrollOffset / bannerHeight).coerceIn(
+                        0f,
+                        1f
+                    ) else 0f
+                )
+
+
+                val bannerAlpha: Float by animateFloatAsState(
+                    targetValue = if (visibilityItem == 0) (1f - scrollOffset / bannerHeight).coerceIn(
+                        0f,
+                        1f
+                    ) else 0f
+                )
+
+                TopScreenBanner(
+                    modifier = Modifier
+                        .height(bannerHeight.dp)
+                        .graphicsLayer { this.alpha = bannerAlpha }
+                )
+
+
+                LazyColumn(
+                    state = lazyListState
+                ) {
+
+                    item {
+                        Spacer(
+                            modifier = Modifier
+                                .height(contentPadding.dp)
+                        )
+                    }
+
+                    item {
+                        HomeScreenContent(
+                            modifier = Modifier,
+                            foodsSuggestionTitle = foodsSuggestionTitle,
+                            onCategoryItemClick = onCategoryItemClick,
+                            onAllCategoriesClick = onAllCategoriesClick,
+                            onMoreCategoriesButtonClick = onMoreCategoriesButtonClick,
+                            foodsSuggestion = suggestionFood,
+                            favoriteDishes = favoriteDishes,
+                            saladList = salads,
+                            pizzaList = pizzas,
+                            chineseList = chinese,
+                            onFoodCardClick = onFoodCardClick,
+                        )
+                    }
                 }
 
-                item {
+                AnimatedVisibility(
+                    visible = scrollOffset < 10,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
                     HomeScreenSearchBar(
-                        modifier = Modifier,
+                        modifier = Modifier
+                            .padding(top = searchBarPadding.dp)
+                            .graphicsLayer {
+                                this.translationY -= scrollOffset / 3
+                            },
                         searchText = searchText,
                         isActiveSearchBar = isActiveSearchBar,
                         searchedHistory = searchedHistories,
+                        filterItems = filterItems,
                         searchedResults = searchedResults,
                         onSearchTextChange = onSearchTextChange,
                         onSearchTriggered = onSearchTriggered,
@@ -166,30 +302,57 @@ fun HomeScreen(
                         onActiveSearchBarChange = onActiveSearchBarChange,
                         onClearSearchedHistoriesClick = onClearSearchedHistoriesClick,
                         onReUseSearchedHistory = onReUseSearchedHistory,
+                        selectedCuisineType = selectedCuisineType,
+                        dietsFilterList = dietsFilterList,
+                        dishTypesFilterList = dishTypesFilterList,
+                        mealTypesFilterList = mealTypesFilterList,
+                        cuisineTypeList = cuisineTypeList,
+                        onDietFilterClick = onDietFilterClick,
+                        onDishFilterClick = onDishFilterClick,
+                        onMealFilterCLick = onMealFilterCLick,
+                        onCuisineTypeClick = onCuisineTypeClick,
+                        onApplyFilterClick = onApplyFilterClick,
+                        onClearAllFilterClick = onClearAllFilterClick
                     )
                 }
 
-                item {
-                    HomeScreenContent(
-                        modifier = Modifier,
-                        foodsSuggestionTitle = foodsSuggestionTitle,
-                        onCategoryItemClick = onCategoryItemClick,
-                        onAllCategoriesClick = onAllCategoriesClick,
-                        onMoreCategoriesButtonClick = onMoreCategoriesButtonClick,
-                        foodsSuggestion = suggestionFood,
-                        favoriteDishes = favoriteDishes,
-                        saladList = salads,
-                        pizzaList = pizzas,
-                        chineseList = chinese,
-                        onFoodSuggestionClick = onFoodCardClick,
-                        onFavoriteFoodClick = onFoodCardClick,
-                        onTopFoodClick = onFoodCardClick,
-                    )
-                }
+                if (!isActiveSearchBar)
+                    Row(
+                        modifier = modifier
+                            .height(76.dp)
+                            .fillMaxWidth()
+                            .background(color = MaterialTheme.colorScheme.background.copy(alpha = topBarAlpha)),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .size(44.dp)
+                                .clip(CircleShape)
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.4f),
+                                    shape = CircleShape
+                                )
+                                .background(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                                .clickable {
+                                    scope.launch {
+                                        drawerState.apply {
+                                            if (isClosed) open() else close()
+                                        }
+                                    }
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = (Icons.Filled.Menu),
+                                contentDescription = stringResource(R.string.go_back),
+                                tint = MaterialTheme.colorScheme.surface
+                            )
+                        }
+                    }
             }
-
         }
-
     }
 }
 
@@ -197,7 +360,6 @@ fun HomeScreen(
 private fun TopScreenBanner(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
-            .height(280.dp)
     ) {
         Image(
             modifier = Modifier
@@ -210,7 +372,7 @@ private fun TopScreenBanner(modifier: Modifier = Modifier) {
 
         Column(
             modifier = Modifier
-                .padding(start = 16.dp, bottom = 20.dp)
+                .padding(start = 16.dp, bottom = 32.dp)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.Bottom
         ) {
@@ -237,17 +399,40 @@ private fun HomeScreenSearchBar(
     modifier: Modifier = Modifier,
     searchText: String,
     isActiveSearchBar: Boolean,
+    selectedCuisineType: String,
+    filterItems: Int?,
     searchedResults: DataResponse,
     searchedHistory: List<SearchedHistory>,
+    dietsFilterList: List<TagFilterItem>,
+    dishTypesFilterList: List<TagFilterItem>,
+    mealTypesFilterList: List<TagFilterItem>,
+    cuisineTypeList: List<TagFilterItem>,
+    onDietFilterClick: (TagFilterItem) -> Unit,
+    onDishFilterClick: (TagFilterItem) -> Unit,
+    onMealFilterCLick: (TagFilterItem) -> Unit,
+    onCuisineTypeClick: (TagFilterItem) -> Unit,
+    onApplyFilterClick: () -> Unit,
+    onClearAllFilterClick: () -> Unit,
     onSearchTextChange: (String) -> Unit,
     onSearchTriggered: () -> Unit,
     onActiveSearchBarChange: (Boolean) -> Unit,
-    onFoodCardClick: (foodUri: String?) -> Unit,
+    onFoodCardClick: (String) -> Unit,
     onClearSearchedHistoriesClick: () -> Unit,
     onReUseSearchedHistory: (String) -> Unit,
 ) {
 
     var showSearchResult by remember { mutableStateOf(false) }
+    var showFilterSheet by remember { mutableStateOf(false) }
+    var showCuisineTypeSheet by remember { mutableStateOf(false) }
+
+    val filterSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+    val cuisineSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
+    val scope = rememberCoroutineScope()
+
     Column(
         modifier = modifier
             .fillMaxWidth(),
@@ -279,6 +464,7 @@ private fun HomeScreenSearchBar(
                     contentDescription = if (isActiveSearchBar) "ic_arrow_left_24" else "ic_search",
                     tint = MaterialTheme.colorScheme.outline,
                     modifier = Modifier.clickable(enabled = isActiveSearchBar) {
+                        onClearAllFilterClick()
                         onActiveSearchBarChange(false)
                         showSearchResult = false
                     }
@@ -290,7 +476,7 @@ private fun HomeScreenSearchBar(
                 if (showSearchResult) {
 
                     when (searchedResults) {
-                        DataResponse.Error -> {
+                        is DataResponse.Error -> {
                             // TODO: Handle error state, e.g., display an error message
                             Text("Error loading results")
                         }
@@ -303,11 +489,81 @@ private fun HomeScreenSearchBar(
                         is DataResponse.Success -> {
                             searchedResults.apiEdamam?.hits?.let { hits ->
                                 if (hits.isNotEmpty()) {
-                                    SearchResults(
-                                        searchedFood = searchText,
-                                        searchedResults = hits,
-                                        onSearchedFoodCardClick = { onFoodCardClick(it) }
-                                    )
+                                    Box {
+                                        SearchResults(
+                                            searchedFood = searchText,
+                                            searchedResults = hits,
+                                            filterItems = filterItems,
+                                            onSearchedFoodCardClick = { onFoodCardClick(it) },
+                                            onFilterButtonClick = {
+                                                scope.launch {
+                                                    showFilterSheet = true
+                                                }
+                                            }
+                                        )
+
+                                        if (showFilterSheet) {
+                                            ModalBottomSheet(
+                                                onDismissRequest = { showFilterSheet = false },
+                                                sheetState = filterSheetState
+                                            ) {
+                                                FiltersSheet(
+                                                    dietsFilterList = dietsFilterList,
+                                                    dishTypesFilterList = dishTypesFilterList,
+                                                    mealTypesFilterList = mealTypesFilterList,
+                                                    selectedCuisineType = selectedCuisineType,
+                                                    onDietFilterClick = onDietFilterClick,
+                                                    onDishFilterClick = onDishFilterClick,
+                                                    onMealFilterCLick = onMealFilterCLick,
+                                                    onApplyFilterClick = {
+                                                        scope.launch {
+                                                            onApplyFilterClick()
+                                                            filterSheetState.hide()
+                                                        }.invokeOnCompletion {
+                                                            if (!filterSheetState.isVisible) {
+                                                                showFilterSheet = false
+                                                            }
+                                                        }
+                                                    },
+                                                    onClearAllFilterClick = onClearAllFilterClick,
+                                                    onCuisineTypesClick = {
+                                                        showCuisineTypeSheet = true
+                                                    },
+                                                    onCloseFilterSheet = {
+                                                        scope.launch {
+                                                            filterSheetState.hide()
+                                                        }.invokeOnCompletion {
+                                                            if (!filterSheetState.isVisible) {
+                                                                showFilterSheet = false
+                                                            }
+                                                        }
+                                                    }
+                                                )
+                                            }
+                                        }
+
+                                        if (showCuisineTypeSheet) {
+                                            ModalBottomSheet(
+                                                onDismissRequest = { showCuisineTypeSheet = false },
+                                                sheetState = cuisineSheetState
+                                            ) {
+                                                CuisineTypesSheet(
+                                                    cuisineTypeList = cuisineTypeList,
+                                                    onCuisineTypeClick = {
+                                                        scope.launch {
+                                                            onCuisineTypeClick(it)
+                                                            delay(500)
+                                                            cuisineSheetState.hide()
+                                                        }.invokeOnCompletion {
+                                                            if (!cuisineSheetState.isVisible) {
+                                                                showCuisineTypeSheet = false
+                                                            }
+                                                        }
+                                                    }
+                                                )
+                                            }
+                                        }
+                                    }
                                 } else {
                                     // TODO: Display a "no results found" message
                                     Text("No results found")
@@ -324,7 +580,10 @@ private fun HomeScreenSearchBar(
                     SearchedHistoryList(
                         searchedHistory = searchedHistory,
                         onClearButtonClick = onClearSearchedHistoriesClick,
-                        onReUseSearchedHistory = onReUseSearchedHistory
+                        onReUseSearchedHistory = {
+                            onReUseSearchedHistory(it)
+                            showSearchResult = true
+                        }
                     )
                 }
 
@@ -346,12 +605,10 @@ private fun HomeScreenContent(
     saladList: DataResponse,
     pizzaList: DataResponse,
     chineseList: DataResponse,
-    onCategoryItemClick: (categoryTitle: String) -> Unit,
     onAllCategoriesClick: () -> Unit,
     onMoreCategoriesButtonClick: () -> Unit,
-    onFoodSuggestionClick: (foodUri: String?) -> Unit,
-    onTopFoodClick: (foodUri: String?) -> Unit,
-    onFavoriteFoodClick: (foodUri: String?) -> Unit,
+    onCategoryItemClick: (categoryTitle: String) -> Unit,
+    onFoodCardClick: (String) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -430,7 +687,7 @@ private fun HomeScreenContent(
             ),
         ) {
             when (foodsSuggestion) {
-                DataResponse.Error -> {
+                is DataResponse.Error -> {
                     item { Text("Error") }
                 }
 
@@ -446,7 +703,7 @@ private fun HomeScreenContent(
                             image = food.recipe?.images?.small?.url ?: "",
                             calories = food.recipe?.calories?.roundToInt() ?: 0,
                             ingredients = food.recipe?.ingredientLines?.size ?: 0,
-                            onClick = { onFoodSuggestionClick(food.recipe?.uri) },
+                            onClick = { onFoodCardClick(food.recipe?.label!!) },
                         )
                     }
 
@@ -461,7 +718,7 @@ private fun HomeScreenContent(
             saladList = saladList,
             pizzaList = pizzaList,
             chineseList = chineseList,
-            onClick = onTopFoodClick
+            onClick = onFoodCardClick
         )
 
         Text(
@@ -484,7 +741,7 @@ private fun HomeScreenContent(
                     image = food.recipe?.image ?: "",
                     calories = food.recipe?.calories?.roundToInt() ?: 0,
                     ingredients = food.recipe?.ingredientLines?.size ?: 0,
-                    onClick = { onFavoriteFoodClick(food.recipe?.uri) },
+                    onClick = { onFoodCardClick(food.recipe?.label!!) },
                 )
             }
         }
@@ -494,15 +751,6 @@ private fun HomeScreenContent(
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(start = 16.dp, top = 48.dp, bottom = 8.dp)
         )
-
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth()
-        ) {
-            TagFilter(title = "High-protein") { }
-        }
-
     }
 
 }
@@ -514,6 +762,7 @@ private fun PreViewHomeScreen() {
     NutriFindTheme {
         HomeScreen(
             modifier = Modifier,
+            isDarkTheme = false,
             searchText = "",
             foodsSuggestionTitle = "random food name",
             isActiveSearchBar = false,
@@ -526,6 +775,12 @@ private fun PreViewHomeScreen() {
             pizzas = DataResponse.Success(fakeFoodData),
             chinese = DataResponse.Success(fakeFoodData),
             favoriteDishes = fakeFoodData.hits,
+            dietsFilterList = emptyList(),
+            dishTypesFilterList = emptyList(),
+            mealTypesFilterList = emptyList(),
+            cuisineTypeList = emptyList(),
+            selectedCuisineType = "",
+            filterItems = null,
             onSearchTextChange = {},
             onActiveSearchBarChange = {},
             onClearSearchedHistoriesClick = {},
@@ -535,6 +790,13 @@ private fun PreViewHomeScreen() {
             onSearchTriggered = {},
             onReUseSearchedHistory = {},
             onFoodCardClick = {},
+            onDishFilterClick = {},
+            onMealFilterCLick = {},
+            onApplyFilterClick = {},
+            onDietFilterClick = {},
+            onClearAllFilterClick = {},
+            onCuisineTypeClick = {},
+            onDarkThemeChange = {}
         )
     }
 }
