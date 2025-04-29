@@ -30,7 +30,7 @@ NutriFind is a modern Android application built with the latest Android technolo
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/NutriFind.git
+git clone https://github.com/SiavashTosangDev/NutriFind.git
 ```
 
 2. Open the project in **Android Studio** (Giraffe or higher recommended).
