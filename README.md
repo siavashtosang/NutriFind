@@ -39,8 +39,8 @@ git clone https://github.com/SiavashTosangDev/NutriFind.git
 
 ```
 BASE_URL=https://api.edamam.com/
-APP_ID=your_app_id_here
-APP_KEY=your_app_key_here
+APP_ID= aeff32ad
+APP_KEY= b5a9932ceec96638ae9e30ea128926ba
 ```
 
 4. Sync Gradle and Run the app on an emulator or a real device.
