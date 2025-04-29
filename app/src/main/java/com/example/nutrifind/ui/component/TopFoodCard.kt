@@ -19,10 +19,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import com.example.nutrifind.data.model.Hits
+import com.example.nutrifind.data.network.DataResponse
 import com.example.nutrifind.data.offline.fakeFoodData
 import com.example.nutrifind.data.offline.topFoods
-import com.example.nutrifind.data.network.DataResponse
 import com.example.nutrifind.ui.theme.NutriFindTheme
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
@@ -81,7 +80,7 @@ fun TopFoodCard(
                 )
 
                 Text(
-                    text = topFoods[page].title,
+                    text = "Top in ${topFoods[page].title}",
                     style = MaterialTheme.typography.titleMedium
                 )
             }

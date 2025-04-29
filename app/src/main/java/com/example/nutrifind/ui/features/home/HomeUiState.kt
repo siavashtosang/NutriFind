@@ -27,7 +27,6 @@ data class HomeUiState(
     val salads: DataResponse = DataResponse.Loading,
     val pizzas: DataResponse = DataResponse.Loading,
     val chinese: DataResponse = DataResponse.Loading,
-    val favoriteDishes: List<Hits> = emptyList()
 )
 
 @Immutable

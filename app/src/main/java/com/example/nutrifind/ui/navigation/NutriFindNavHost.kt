@@ -1,5 +1,7 @@
 package com.example.nutrifind.ui.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -14,6 +16,7 @@ import com.example.nutrifind.ui.features.home.GraphHome
 import com.example.nutrifind.ui.features.home.homeScreen
 import kotlin.reflect.KClass
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NutriFindNavHost(
     modifier: Modifier = Modifier,

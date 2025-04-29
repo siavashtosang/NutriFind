@@ -106,7 +106,6 @@ fun HomeScreenRote(
         searchedHistories = uiState.searchHistory,
         suggestionFood = uiState.foodsSuggestion,
         searchedResults = uiState.searchedResults,
-        favoriteDishes = uiState.favoriteDishes,
         salads = uiState.salads,
         pizzas = uiState.pizzas,
         chinese = uiState.chinese,
@@ -150,7 +149,6 @@ fun HomeScreen(
     salads: DataResponse,
     pizzas: DataResponse,
     chinese: DataResponse,
-    favoriteDishes: List<Hits>,
     dietsFilterList: List<TagFilterItem>,
     dishTypesFilterList: List<TagFilterItem>,
     mealTypesFilterList: List<TagFilterItem>,
@@ -234,7 +232,7 @@ fun HomeScreen(
                     targetValue = if (visibilityItem == 0) (scrollOffset / bannerHeight).coerceIn(
                         0f,
                         1f
-                    ) else 0f
+                    ) else 1f
                 )
 
 
@@ -271,7 +269,6 @@ fun HomeScreen(
                             onAllCategoriesClick = onAllCategoriesClick,
                             onMoreCategoriesButtonClick = onMoreCategoriesButtonClick,
                             foodsSuggestion = suggestionFood,
-                            favoriteDishes = favoriteDishes,
                             saladList = salads,
                             pizzaList = pizzas,
                             chineseList = chinese,
@@ -601,7 +598,6 @@ private fun HomeScreenContent(
     modifier: Modifier = Modifier,
     foodsSuggestionTitle: String,
     foodsSuggestion: DataResponse,
-    favoriteDishes: List<Hits>,
     saladList: DataResponse,
     pizzaList: DataResponse,
     chineseList: DataResponse,
@@ -714,45 +710,13 @@ private fun HomeScreenContent(
 
         TopFoodCard(
             modifier = Modifier
-                .padding(top = 55.dp),
+                .padding(top = 55.dp, bottom = 16.dp),
             saladList = saladList,
             pizzaList = pizzaList,
             chineseList = chineseList,
             onClick = onFoodCardClick
         )
-
-        Text(
-            text = stringResource(R.string.favorite_dishes),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(start = 16.dp, top = 64.dp, bottom = 8.dp)
-        )
-
-        LazyRow(
-            modifier = Modifier,
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(
-                space = 12.dp,
-                alignment = Alignment.Start
-            ),
-        ) {
-            items(favoriteDishes) { food: Hits ->
-                VerticalFoodCard(
-                    title = food.recipe?.label ?: "",
-                    image = food.recipe?.image ?: "",
-                    calories = food.recipe?.calories?.roundToInt() ?: 0,
-                    ingredients = food.recipe?.ingredientLines?.size ?: 0,
-                    onClick = { onFoodCardClick(food.recipe?.label!!) },
-                )
-            }
-        }
-
-        Text(
-            text = stringResource(R.string.diets),
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(start = 16.dp, top = 48.dp, bottom = 8.dp)
-        )
     }
-
 }
 
 
@@ -774,7 +738,6 @@ private fun PreViewHomeScreen() {
             salads = DataResponse.Success(fakeFoodData),
             pizzas = DataResponse.Success(fakeFoodData),
             chinese = DataResponse.Success(fakeFoodData),
-            favoriteDishes = fakeFoodData.hits,
             dietsFilterList = emptyList(),
             dishTypesFilterList = emptyList(),
             mealTypesFilterList = emptyList(),

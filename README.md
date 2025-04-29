@@ -1,65 +1,59 @@
-# NutriFind 🍽️
+# NutriFind 🌟
 
-A modern Android application for finding and exploring healthy foods.
+NutriFind is a modern Android application built with the latest Android technologies. It helps users easily search and discover various food recipes, view detailed nutritional information, and apply custom filters to find dishes based on diet, meal type, and cuisine.
 
----
+## 📊 Project Features
 
-## 🔹 Tech Stack
+- Food Search with advanced filters (Diet, Meal Type, Cuisine)
+- Food Details including ingredients, calories, nutrition breakdown
+- Light & Dark Mode Support
+- Save search history for easy reuse
+- Category Browsing
+- Fully responsive modern UI with Jetpack Compose
+- Data persistence with DataStore
+- REST API integration (Edamam API)
 
-![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)
-![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-4285F4?style=for-the-badge&logo=jetpackcompose&logoColor=white)
-![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
-![Hilt](https://img.shields.io/badge/Hilt-FF6F00?style=for-the-badge&logo=google&logoColor=white)
-![Retrofit](https://img.shields.io/badge/Retrofit-0077B5?style=for-the-badge&logo=retrofit&logoColor=white)
-![Room](https://img.shields.io/badge/Room-4CAF50?style=for-the-badge&logo=google&logoColor=white)
-![DataStore](https://img.shields.io/badge/DataStore-673AB7?style=for-the-badge&logo=google&logoColor=white)
+## 🔧 Technologies Used
 
----
-
-## ✨ Features
-
-- Beautiful UI built with Jetpack Compose
+- Kotlin
+- Jetpack Compose
 - MVVM Architecture
-- REST API integration with Retrofit
-- Dependency Injection using Hilt
-- Local storage with Room and DataStore
-- Dynamic Dark/Light Theme switching
-- Advanced search with filters (diet, dish type, cuisine type)
-- Favorites and search history management
-- Fully responsive and modern UX
+- Retrofit + OkHttp (Networking)
+- DataStore Preferences (Local Storage)
+- Hilt (Dependency Injection)
+- Navigation Component (Compose)
+- Coil (Image Loading)
+- Modular Clean Architecture Principles
 
----
-
-## 📁 Setup Instructions
+## 🔄 How to Run the Project
 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/YourUsername/NutriFind.git
+git clone https://github.com/YOUR_USERNAME/NutriFind.git
 ```
 
-2. Open the project in Android Studio.
-3. Sync Gradle and build the project.
-4. Run the application on your emulator or real device.
+2. Open the project in **Android Studio** (Giraffe or higher recommended).
+
+3. Make sure to add your Edamam API credentials in `local.properties`:
+
+```
+BASE_URL=https://api.edamam.com/
+APP_ID=your_app_id_here
+APP_KEY=your_app_key_here
+```
+
+4. Sync Gradle and Run the app on an emulator or a real device.
+
+
+## 👩‍💻 About the Developer
+
+Created by **Siavash Tosang** - [LinkedIn Profile](https://www.linkedin.com/in/siavashtosang/)
+
+## 💚 License
+
+This project is for educational purposes and personal portfolio showcase.
 
 ---
 
-## 📸 Screenshots
-
-*(Coming soon!)*
-
----
-
-## 👨‍💼 About Me
-
-Hi, I'm **Siavash Tosang**, an Android Developer passionate about building beautiful and functional mobile apps. 👩‍💻
-
-Let's connect on [LinkedIn](https://www.linkedin.com/in/YourLinkedInProfile)!
-
----
-
-_"Crafting smooth and efficient user experiences, one screen at a time."_
-
----
-
-> Made with ❤️ by Siavash Tosang
+Feel free to star the repo if you like it! ✨

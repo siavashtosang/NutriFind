@@ -1,5 +1,7 @@
 package com.example.nutrifind.ui.features.home
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -13,6 +15,7 @@ object GraphHome
 @Serializable
 object ScreenHome
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.homeScreen(
     nestedGraphs: NavGraphBuilder.() -> Unit,
     onCategoryItemClick: (String) -> Unit,
