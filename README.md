@@ -11,7 +11,6 @@ A modern Android application for finding and exploring healthy foods.
 ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
 ![Hilt](https://img.shields.io/badge/Hilt-FF6F00?style=for-the-badge&logo=google&logoColor=white)
 ![Retrofit](https://img.shields.io/badge/Retrofit-0077B5?style=for-the-badge&logo=retrofit&logoColor=white)
-![Room](https://img.shields.io/badge/Room-4CAF50?style=for-the-badge&logo=google&logoColor=white)
 ![DataStore](https://img.shields.io/badge/DataStore-673AB7?style=for-the-badge&logo=google&logoColor=white)
 
 ---
