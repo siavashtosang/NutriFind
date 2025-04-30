@@ -54,7 +54,7 @@ APP_KEY = b5a9932ceec96638ae9e30ea128926ba
 ## 📸 Screenshots
 
 ### 🏠 Home Screen
-<img src="home.jpg" width="300"/>
+<img src="https://github.com/user-attachments/assets/f56ad49b-1eed-4f80-baee-0048b1abfb30" width="300"/>
 
 ### 🔍 Search Feature
 <img src="search.jpg" width="300"/>
