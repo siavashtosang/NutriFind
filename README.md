@@ -57,13 +57,13 @@ APP_KEY = b5a9932ceec96638ae9e30ea128926ba
 <img src="https://github.com/user-attachments/assets/f56ad49b-1eed-4f80-baee-0048b1abfb30" width="300"/>
 
 ### 🔍 Search Feature
-<img src="search.jpg" width="300"/>
+<img src="https://github.com/user-attachments/assets/7d509d76-cde0-4a6f-8f05-eff0aaca9f16" width="300"/>
 
 ### 🔍 Filter Feature
-<img src="filter.jpg" width="300"/>
+<img src="https://github.com/user-attachments/assets/803760a3-6a66-4146-a892-311b4ef952f0" width="300"/>
 
 ### 🔍 Details Feature
-<img src="details.jpg" width="300"/>---
+<img src="https://github.com/user-attachments/assets/27415037-9ec3-48ff-a2c0-f83848a9fdff" width="300"/>---
 
 ## 👨‍💼 About Me
 
