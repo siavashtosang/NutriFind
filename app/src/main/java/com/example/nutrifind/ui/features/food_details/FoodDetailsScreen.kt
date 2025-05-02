@@ -51,6 +51,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.nutrifind.R
 import com.example.nutrifind.data.model.Ingredients
+import com.example.nutrifind.data.network.DataResponse
+import com.example.nutrifind.ui.component.NutriFindErrorScreen
+import com.example.nutrifind.ui.component.NutriFindLoadingScreen
 import com.example.nutrifind.ui.theme.NutriFindTheme
 import kotlinx.coroutines.launch
 
@@ -69,21 +72,36 @@ fun FoodDetailsScreenRout(
     intent.data = Uri.parse(uiState.recipeUri)
 
 
-    FoodDetailsScreen(
-        modifier = modifier,
-        foodName = uiState.foodName,
-        foodImage = uiState.foodImage,
-        calories = uiState.calories,
-        dailyValue = uiState.dailyValue,
-        ingredients = uiState.ingredients,
-        nutritionList = uiState.nutritionList,
-        onFoodRecipeClick = {
-            scope.launch {
-                context.startActivity(intent)
-            }
-        },
-        onBackButtonClick = onBackButtonClick
-    )
+    when (uiState.results) {
+        is DataResponse.Error -> {
+            NutriFindErrorScreen(
+                message = (uiState.results as DataResponse.Error).message,
+                onRetry = viewModel::onRetry
+            )
+        }
+
+        DataResponse.Loading -> {
+            NutriFindLoadingScreen()
+        }
+
+        is DataResponse.Success -> {
+            FoodDetailsScreen(
+                modifier = modifier,
+                foodName = uiState.foodName,
+                foodImage = uiState.foodImage,
+                calories = uiState.calories,
+                dailyValue = uiState.dailyValue,
+                ingredients = uiState.ingredients,
+                nutritionList = uiState.nutritionList,
+                onFoodRecipeClick = {
+                    scope.launch {
+                        context.startActivity(intent)
+                    }
+                },
+                onBackButtonClick = onBackButtonClick
+            )
+        }
+    }
 }
 
 @Composable

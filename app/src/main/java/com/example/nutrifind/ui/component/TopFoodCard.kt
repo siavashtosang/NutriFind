@@ -16,9 +16,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import com.example.nutrifind.R
 import com.example.nutrifind.data.network.DataResponse
 import com.example.nutrifind.data.offline.fakeFoodData
 import com.example.nutrifind.data.offline.topFoods
@@ -30,9 +32,9 @@ import kotlin.math.roundToInt
 @Composable
 fun TopFoodCard(
     modifier: Modifier = Modifier,
-    saladList: DataResponse,
-    pizzaList: DataResponse,
-    chineseList: DataResponse,
+    saladList: DataResponse.Success,
+    pizzaList: DataResponse.Success,
+    chineseList: DataResponse.Success,
     onClick: (String) -> Unit,
 ) {
     val pagerState = rememberPagerState(pageCount = { 3 })
@@ -80,88 +82,51 @@ fun TopFoodCard(
                 )
 
                 Text(
-                    text = "Top in ${topFoods[page].title}",
+                    text = stringResource(R.string.top_in, topFoods[page].title),
                     style = MaterialTheme.typography.titleMedium
                 )
             }
 
             when (page) {
                 0 -> {
-                    when (saladList) {
-                        is DataResponse.Error -> {
-                            Text("Error")
-                        }
-
-                        DataResponse.Loading -> {
-                            Text("Loading")
-                        }
-
-                        is DataResponse.Success -> {
-                            saladList.apiEdamam?.hits?.take(3)?.forEach { food ->
-                                HorizontalFoodCard(
-                                    modifier = Modifier.padding(bottom = 12.dp),
-                                    title = food.recipe?.label ?: "",
-                                    image = food.recipe?.images?.thumbnail?.url ?: "",
-                                    calories = food.recipe?.calories?.roundToInt() ?: 0,
-                                    ingredients = food.recipe?.ingredientLines?.size ?: 0,
-                                    onClick = { onClick(food.recipe?.label!!) }
-                                )
-
-                            }
-                        }
+                    saladList.apiEdamam?.hits?.take(3)?.forEach { food ->
+                        HorizontalFoodCard(
+                            modifier = Modifier.padding(bottom = 12.dp),
+                            title = food.recipe?.label ?: "",
+                            image = food.recipe?.images?.thumbnail?.url ?: "",
+                            calories = food.recipe?.calories?.roundToInt() ?: 0,
+                            ingredients = food.recipe?.ingredientLines?.size ?: 0,
+                            onClick = { onClick(food.recipe?.label!!) }
+                        )
                     }
                 }
 
                 1 -> {
-                    when (pizzaList) {
 
-                        is DataResponse.Error -> {
-                            Text("Error")
-                        }
-
-                        DataResponse.Loading -> {
-                            Text("Loading")
-                        }
-
-                        is DataResponse.Success -> {
-                            pizzaList.apiEdamam?.hits?.take(3)?.forEach { food ->
-                                HorizontalFoodCard(
-                                    modifier = Modifier.padding(bottom = 12.dp),
-                                    title = food.recipe?.label ?: "",
-                                    image = food.recipe?.images?.thumbnail?.url ?: "",
-                                    calories = food.recipe?.calories?.roundToInt() ?: 0,
-                                    ingredients = food.recipe?.ingredientLines?.size ?: 0,
-                                    onClick = { onClick(food.recipe?.label!!) }
-                                )
-                            }
-                        }
+                    pizzaList.apiEdamam?.hits?.take(3)?.forEach { food ->
+                        HorizontalFoodCard(
+                            modifier = Modifier.padding(bottom = 12.dp),
+                            title = food.recipe?.label ?: "",
+                            image = food.recipe?.images?.thumbnail?.url ?: "",
+                            calories = food.recipe?.calories?.roundToInt() ?: 0,
+                            ingredients = food.recipe?.ingredientLines?.size ?: 0,
+                            onClick = { onClick(food.recipe?.label!!) }
+                        )
                     }
                 }
 
                 2 -> {
-                    when (chineseList) {
 
-                        is DataResponse.Error -> {
-                            Text("Error")
-                        }
+                    chineseList.apiEdamam?.hits?.take(3)?.forEach { food ->
 
-                        DataResponse.Loading -> {
-                            Text("Loading")
-                        }
-
-                        is DataResponse.Success -> {
-                            chineseList.apiEdamam?.hits?.take(3)?.forEach { food ->
-
-                                HorizontalFoodCard(
-                                    modifier = Modifier.padding(bottom = 12.dp),
-                                    title = food.recipe?.label ?: "",
-                                    image = food.recipe?.images?.thumbnail?.url ?: "",
-                                    calories = food.recipe?.calories?.roundToInt() ?: 0,
-                                    ingredients = food.recipe?.ingredientLines?.size ?: 0,
-                                    onClick = { onClick(food.recipe?.label!!) }
-                                )
-                            }
-                        }
+                        HorizontalFoodCard(
+                            modifier = Modifier.padding(bottom = 12.dp),
+                            title = food.recipe?.label ?: "",
+                            image = food.recipe?.images?.thumbnail?.url ?: "",
+                            calories = food.recipe?.calories?.roundToInt() ?: 0,
+                            ingredients = food.recipe?.ingredientLines?.size ?: 0,
+                            onClick = { onClick(food.recipe?.label!!) }
+                        )
                     }
                 }
             }

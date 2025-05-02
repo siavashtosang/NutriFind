@@ -174,16 +174,6 @@ class HomeViewModel @Inject constructor(
 
     fun onDietFilterClick(selectedFilter: TagFilterItem) {
 
-        /*
-                val newDietFilterList = _uiState.value.dietsFilters.map { item ->
-                    if (item.id == selectedFilter.id) {
-                        item.copy(selected = !item.selected)
-                    } else {
-                        item.copy(selected = false)
-                    }
-                }
-        */
-
         _uiState.update { currentState ->
             currentState.copy(dietsFilters = currentState.dietsFilters.toggleExactly(selectedFilter))
         }
@@ -191,14 +181,6 @@ class HomeViewModel @Inject constructor(
 
 
     fun onDishFilterClick(selectedFilter: TagFilterItem) {
-
-        /*val newDishFilterList = _uiState.value.dishTypesFilters.map { item ->
-            if (item.id == selectedFilter.id) {
-                item.copy(selected = !item.selected)
-            } else {
-                item.copy(selected = false)
-            }
-        }*/
 
         _uiState.update { currentState ->
             currentState.copy(
@@ -211,14 +193,6 @@ class HomeViewModel @Inject constructor(
 
     fun onMealFilterCLick(selectedFilter: TagFilterItem) {
 
-        /*val newMealFilterList = _uiState.value.mealTypesFilters.map { item ->
-            if (item.id == selectedFilter.id) {
-                item.copy(selected = !item.selected)
-            } else {
-                item.copy(selected = false)
-            }
-        }*/
-
         _uiState.update { currentState ->
             currentState.copy(
                 mealTypesFilters = currentState.mealTypesFilters.toggleExactly(
@@ -229,14 +203,6 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onCuisineTypeFilterClick(selectedFilter: TagFilterItem) {
-
-        /*val newCuisineTypeFilterList = _uiState.value.cuisineTypeFilters.map { item ->
-            if (item.id == selectedFilter.id) {
-                item.copy(selected = !item.selected)
-            } else {
-                item.copy(selected = false)
-            }
-        }*/
 
         _uiState.update { currentState ->
             currentState.copy(
@@ -309,6 +275,10 @@ class HomeViewModel @Inject constructor(
             }
         }
 
+    }
+
+    fun onRetryHome(){
+        initializeFoodData()
     }
 
     private fun List<TagFilterItem>.toggleExactly(one: TagFilterItem) =

@@ -17,16 +17,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.nutrifind.R
 import com.example.nutrifind.data.model.Hits
 import com.example.nutrifind.data.network.DataResponse
 import com.example.nutrifind.data.offline.fakeFoodData
 import com.example.nutrifind.ui.component.HorizontalFoodCard
+import com.example.nutrifind.ui.component.NutriFindErrorScreen
+import com.example.nutrifind.ui.component.NutriFindLoadingScreen
 import com.example.nutrifind.ui.component.NutriFindTopAppBar
 import kotlin.math.roundToInt
 
@@ -35,7 +35,7 @@ fun CategoryResultsScreenRout(
     modifier: Modifier = Modifier,
     viewModel: CategoryViewModel = hiltViewModel(),
     onFoodCardClick: (String) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -43,13 +43,11 @@ fun CategoryResultsScreenRout(
 
     when (uiState.results) {
         is DataResponse.Error -> {
-            //TODO Error Screen
-            Text(stringResource(R.string.error))
+            NutriFindErrorScreen(onRetry = viewModel::onRetry)
         }
 
         DataResponse.Loading -> {
-            //TODO Loading Screen
-            Text(stringResource(R.string.loading))
+            NutriFindLoadingScreen()
         }
 
         is DataResponse.Success -> {

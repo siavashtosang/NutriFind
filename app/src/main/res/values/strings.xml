@@ -40,4 +40,7 @@
     <string name="ingredients">Ingredients</string>
     <string name="appearance">Appearance</string>
     <string name="dark_mode">Dark Mode</string>
+    <string name="error_loading_data_please_try_again">Error loading data.\nPlease try again.</string>
+    <string name="retry">Retry</string>
+    <string name="top_in">Top in %1$s</string>
 </resources>

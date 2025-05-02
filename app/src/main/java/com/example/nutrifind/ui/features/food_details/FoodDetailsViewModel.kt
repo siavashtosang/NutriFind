@@ -47,6 +47,14 @@ class FoodDetailsViewModel @Inject constructor(
         }
     }
 
+    fun onRetry(){
+        viewModelScope.launch {
+            selectedFoodNameFlow.collectLatest {
+                searchFood(foodName = it)
+                findSelectedFood(foodName = it)
+            }
+        }
+    }
 
     private fun findSelectedFood(foodName: String) {
 
