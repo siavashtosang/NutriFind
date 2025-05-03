@@ -55,6 +55,7 @@ import com.example.nutrifind.data.network.DataResponse
 import com.example.nutrifind.ui.component.NutriFindErrorScreen
 import com.example.nutrifind.ui.component.NutriFindLoadingScreen
 import com.example.nutrifind.ui.theme.NutriFindTheme
+import com.example.nutrifind.utils.Food
 import kotlinx.coroutines.launch
 
 @Composable
@@ -69,7 +70,7 @@ fun FoodDetailsScreenRout(
     val scope = rememberCoroutineScope()
 
     val intent = Intent(Intent.ACTION_VIEW)
-    intent.data = Uri.parse(uiState.recipeUri)
+    intent.data = Uri.parse(uiState.food.recipeUrl)
 
 
     when (uiState.results) {
@@ -87,12 +88,7 @@ fun FoodDetailsScreenRout(
         is DataResponse.Success -> {
             FoodDetailsScreen(
                 modifier = modifier,
-                foodName = uiState.foodName,
-                foodImage = uiState.foodImage,
-                calories = uiState.calories,
-                dailyValue = uiState.dailyValue,
-                ingredients = uiState.ingredients,
-                nutritionList = uiState.nutritionList,
+                food = uiState.food,
                 onFoodRecipeClick = {
                     scope.launch {
                         context.startActivity(intent)
@@ -107,12 +103,7 @@ fun FoodDetailsScreenRout(
 @Composable
 fun FoodDetailsScreen(
     modifier: Modifier = Modifier,
-    foodName: String,
-    foodImage: String,
-    calories: String,
-    dailyValue: String,
-    ingredients: List<Ingredients>,
-    nutritionList: List<Nutrition>,
+    food: Food,
     onFoodRecipeClick: () -> Unit,
     onBackButtonClick: () -> Unit,
 ) {
@@ -145,8 +136,8 @@ fun FoodDetailsScreen(
             ) {
                 item {
                     FoodDetailBanner(
-                        foodName = foodName,
-                        image = foodImage
+                        foodName = food.name,
+                        image = food.image
                     )
                 }
 
@@ -167,7 +158,7 @@ fun FoodDetailsScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    text = calories,
+                                    text = food.calories.toString(),
                                     style = MaterialTheme.typography.titleLarge.copy(
                                         fontWeight = FontWeight(
                                             712
@@ -188,7 +179,7 @@ fun FoodDetailsScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    text = dailyValue,
+                                    text = food.serving.toString(),
                                     style = MaterialTheme.typography.titleLarge.copy(
                                         fontWeight = FontWeight(
                                             712
@@ -213,7 +204,7 @@ fun FoodDetailsScreen(
                     }
                 }
 
-                items(ingredients) { ingredient ->
+                items(food.ingredients) { ingredient ->
 
                     Row(
                         modifier = Modifier
@@ -319,7 +310,7 @@ fun FoodDetailsScreen(
                     }
                 }
 
-                items(nutritionList) { nutrition ->
+                items(food.nutrition) { nutrition ->
 
                     Row(
                         modifier = Modifier
@@ -347,7 +338,7 @@ fun FoodDetailsScreen(
             }
 
             FoodDetailsTopBar(
-                title = foodName,
+                title = food.name,
                 alpha = alpha,
                 onBackButtonClick = onBackButtonClick
             )
@@ -449,24 +440,19 @@ private fun FoodDetailsTopBar(
 private fun PreViewFoodDetailsScreen() {
     NutriFindTheme {
         FoodDetailsScreen(
-            foodName = "Cheese Burger with Quinoa and Chickpeas",
-            foodImage = "",
-            calories = "835",
-            dailyValue = "41",
-            ingredients = MutableList(9) {
-                Ingredients(
-                    text = "10-12 oz fusilier pasta, or pasta of your choice",
-                    food = "pasta",
-                    image = "https://www.edamam.com/food-img/296/296ff2b02ef3822928c3c923e22c7d19.jpg"
-                )
-            },
-            nutritionList = MutableList(6) {
-                Nutrition(
-                    name = "Protein",
-                    value = "40",
-                    unit = "g"
-                )
-            },
+            food = Food(
+                name = "Pasta alla Gracia Recipe",
+                image = "",
+                calories = 50,
+                ingredients = MutableList(4) {
+                    Ingredients(
+                        text = "salt",
+                        measure = "g",
+                        quantity = 0.5
+                    )
+                },
+                nutrition = emptyList(),
+            ),
             onFoodRecipeClick = {},
             onBackButtonClick = {}
         )

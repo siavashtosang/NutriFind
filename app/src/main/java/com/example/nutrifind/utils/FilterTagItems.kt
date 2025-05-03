@@ -1,4 +1,4 @@
-package com.example.nutrifind.data.offline
+package com.example.nutrifind.utils
 
 val dietsFilterList = listOf(
     TagFilterItem(id = 0, title = "balanced", selected = false),

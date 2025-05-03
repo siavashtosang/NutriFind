@@ -3,9 +3,9 @@ package com.example.nutrifind.ui.features.food_details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.nutrifind.data.model.Hits
 import com.example.nutrifind.data.network.DataResponse
-import com.example.nutrifind.data.nutri_find_repository.repository.NutriFindRepository
+import com.example.nutrifind.repository.NutriFindRepository
+import com.example.nutrifind.utils.convertToFoodClass
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,7 +32,7 @@ class FoodDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             selectedFoodNameFlow.collectLatest {
                 searchFood(foodName = it)
-                findSelectedFood(foodName = it)
+                findSelectedFood(selectedFoodName = it)
             }
         }
     }
@@ -47,112 +47,33 @@ class FoodDetailsViewModel @Inject constructor(
         }
     }
 
-    fun onRetry(){
+    fun onRetry() {
         viewModelScope.launch {
             selectedFoodNameFlow.collectLatest {
                 searchFood(foodName = it)
-                findSelectedFood(foodName = it)
+                findSelectedFood(selectedFoodName = it)
             }
         }
     }
 
-    private fun findSelectedFood(foodName: String) {
+    private fun findSelectedFood(selectedFoodName: String) {
 
         val currentResult = _uiState.value.results
 
         if (currentResult is DataResponse.Success) {
-            val findFood = currentResult.apiEdamam?.hits?.find { it.recipe?.label == foodName }
+            val foods = currentResult.apiEdamam?.convertToFoodClass()
+            val findFood = foods?.find { food -> food.name == selectedFoodName }
 
             if (findFood != null) {
-                val nutritionList = createNutritionList(findFood)
-
                 _uiState.update { currentState ->
-                    currentState.copy(
-                        recipeUri = findFood.recipe?.url ?: "",
-                        foodName = findFood.recipe?.label ?: "",
-                        foodImage = findFood.recipe?.images?.regular?.url ?: "",
-                        calories = findFood.recipe?.calories?.toInt().toString(),
-                        dailyValue = findFood.recipe?.yield?.toInt().toString(),
-                        ingredients = findFood.recipe?.ingredients ?: emptyList(),
-                        nutritionList = nutritionList
-
-                    )
+                    currentState.copy(food = findFood)
                 }
+
             } else {
                 _uiState.update { it.copy(results = DataResponse.Error(message = "Food not found")) }
             }
         } else {
             _uiState.update { it.copy(results = DataResponse.Error(message = "No data available")) }
         }
-    }
-
-    private fun createNutritionList(findFood: Hits?): List<Nutrition> {
-        val totalNutrients = findFood?.recipe?.totalNutrients ?: return emptyList()
-
-        return listOfNotNull(
-            totalNutrients.procnt?.let {
-                Nutrition(
-                    name = it.label.toString(),
-                    value = it.quantity?.toInt().toString(),
-                    unit = it.unit.toString()
-                )
-            },
-
-            totalNutrients.chocdf?.let {
-                Nutrition(
-                    name = it.label.toString(),
-                    value = it.quantity?.toInt().toString(),
-                    unit = it.unit.toString()
-                )
-            },
-
-            totalNutrients.fat?.let {
-                Nutrition(
-                    name = it.label.toString(),
-                    value = it.quantity?.toInt().toString(),
-                    unit = it.unit.toString()
-                )
-            },
-
-            totalNutrients.chole?.let {
-                Nutrition(
-                    name = it.label.toString(),
-                    value = it.quantity?.toInt().toString(),
-                    unit = it.unit.toString()
-                )
-            },
-
-            totalNutrients.sugar?.let {
-                Nutrition(
-                    name = it.label.toString(),
-                    value = it.quantity?.toInt().toString(),
-                    unit = it.unit.toString()
-                )
-            },
-
-            totalNutrients.fibtg?.let {
-                Nutrition(
-                    name = it.label.toString(),
-                    value = it.quantity?.toInt().toString(),
-                    unit = it.unit.toString()
-                )
-            },
-
-            totalNutrients.ca?.let {
-                Nutrition(
-                    name = it.label.toString(),
-                    value = it.quantity?.toInt().toString(),
-                    unit = it.unit.toString()
-                )
-            },
-
-            totalNutrients.mg?.let {
-                Nutrition(
-                    name = it.label.toString(),
-                    value = it.quantity?.toInt().toString(),
-                    unit = it.unit.toString()
-                )
-            }
-        )
     }
 }

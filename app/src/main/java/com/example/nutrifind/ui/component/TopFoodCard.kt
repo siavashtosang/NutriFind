@@ -21,20 +21,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.example.nutrifind.R
-import com.example.nutrifind.data.network.DataResponse
-import com.example.nutrifind.data.offline.fakeFoodData
-import com.example.nutrifind.data.offline.topFoods
+import com.example.nutrifind.utils.Food
+import com.example.nutrifind.utils.topFoods
 import com.example.nutrifind.ui.theme.NutriFindTheme
 import kotlin.math.absoluteValue
-import kotlin.math.roundToInt
 
 
 @Composable
 fun TopFoodCard(
     modifier: Modifier = Modifier,
-    saladList: DataResponse.Success,
-    pizzaList: DataResponse.Success,
-    chineseList: DataResponse.Success,
+    saladList: List<Food>,
+    pizzaList: List<Food>,
+    chineseList: List<Food>,
     onClick: (String) -> Unit,
 ) {
     val pagerState = rememberPagerState(pageCount = { 3 })
@@ -89,43 +87,43 @@ fun TopFoodCard(
 
             when (page) {
                 0 -> {
-                    saladList.apiEdamam?.hits?.take(3)?.forEach { food ->
+                    saladList.take(3).forEach { food ->
                         HorizontalFoodCard(
                             modifier = Modifier.padding(bottom = 12.dp),
-                            title = food.recipe?.label ?: "",
-                            image = food.recipe?.images?.thumbnail?.url ?: "",
-                            calories = food.recipe?.calories?.roundToInt() ?: 0,
-                            ingredients = food.recipe?.ingredientLines?.size ?: 0,
-                            onClick = { onClick(food.recipe?.label!!) }
+                            title = food.name,
+                            image = food.image,
+                            calories = food.calories,
+                            ingredients = food.ingredients.size,
+                            onClick = { onClick(food.name) }
                         )
                     }
                 }
 
                 1 -> {
 
-                    pizzaList.apiEdamam?.hits?.take(3)?.forEach { food ->
+                    pizzaList.take(3).forEach { food ->
                         HorizontalFoodCard(
                             modifier = Modifier.padding(bottom = 12.dp),
-                            title = food.recipe?.label ?: "",
-                            image = food.recipe?.images?.thumbnail?.url ?: "",
-                            calories = food.recipe?.calories?.roundToInt() ?: 0,
-                            ingredients = food.recipe?.ingredientLines?.size ?: 0,
-                            onClick = { onClick(food.recipe?.label!!) }
+                            title = food.name,
+                            image = food.image,
+                            calories = food.calories,
+                            ingredients = food.ingredients.size,
+                            onClick = { onClick(food.name) }
                         )
                     }
                 }
 
                 2 -> {
 
-                    chineseList.apiEdamam?.hits?.take(3)?.forEach { food ->
+                    chineseList.take(3).forEach { food ->
 
                         HorizontalFoodCard(
                             modifier = Modifier.padding(bottom = 12.dp),
-                            title = food.recipe?.label ?: "",
-                            image = food.recipe?.images?.thumbnail?.url ?: "",
-                            calories = food.recipe?.calories?.roundToInt() ?: 0,
-                            ingredients = food.recipe?.ingredientLines?.size ?: 0,
-                            onClick = { onClick(food.recipe?.label!!) }
+                            title = food.name,
+                            image = food.image,
+                            calories = food.calories,
+                            ingredients = food.ingredients.size,
+                            onClick = { onClick(food.name) }
                         )
                     }
                 }
@@ -141,9 +139,9 @@ private fun PreviewTopFoodCard() {
     MaterialTheme {
         NutriFindTheme {
             TopFoodCard(
-                saladList = DataResponse.Success(fakeFoodData),
-                pizzaList = DataResponse.Success(fakeFoodData),
-                chineseList = DataResponse.Success(fakeFoodData),
+                saladList = emptyList(),
+                pizzaList = emptyList(),
+                chineseList = emptyList(),
                 onClick = {}
             )
         }

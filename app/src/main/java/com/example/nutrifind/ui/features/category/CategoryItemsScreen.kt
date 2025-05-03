@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.nutrifind.R
-import com.example.nutrifind.data.offline.foodCategoryItems
+import com.example.nutrifind.utils.foodCategoryItems
 import com.example.nutrifind.ui.component.FoodCategoryCard
 import com.example.nutrifind.ui.component.NutriFindTopAppBar
 import com.example.nutrifind.ui.theme.NutriFindTheme

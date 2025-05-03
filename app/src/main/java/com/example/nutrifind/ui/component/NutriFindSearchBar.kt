@@ -32,11 +32,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.nutrifind.R
-import com.example.nutrifind.data.model.Hits
-import com.example.nutrifind.data.offline.fakeFoodData
+import com.example.nutrifind.data.model.Ingredients
 import com.example.nutrifind.ui.features.home.SearchedHistory
 import com.example.nutrifind.ui.theme.NutriFindTheme
-import kotlin.math.roundToInt
+import com.example.nutrifind.utils.Food
 
 @Composable
 fun SearchedHistoryList(
@@ -190,7 +189,7 @@ fun SearchResults(
     modifier: Modifier = Modifier,
     searchedFood: String,
     filterItems: Int?,
-    searchedResults: List<Hits>,
+    searchResults: List<Food>,
     onSearchedFoodCardClick: (String) -> Unit,
     onFilterButtonClick: () -> Unit
 ) {
@@ -219,13 +218,13 @@ fun SearchResults(
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                items(searchedResults) { food ->
+                items(searchResults) { food ->
                     HorizontalFoodCard(
-                        title = food.recipe?.label ?: "",
-                        image = food.recipe?.images?.thumbnail?.url ?: "",
-                        calories = food.recipe?.calories?.roundToInt() ?: 0,
-                        ingredients = food.recipe?.ingredientLines?.size ?: 0,
-                        onClick = { onSearchedFoodCardClick(food.recipe?.label!!) }
+                        title = food.name,
+                        image = food.image,
+                        calories = food.calories,
+                        ingredients = food.ingredients.size,
+                        onClick = { onSearchedFoodCardClick(food.name) }
                     )
                 }
             }
@@ -301,7 +300,17 @@ private fun PreviewSearchResults() {
         SearchResults(
             searchedFood = "Pasta",
             filterItems = 4,
-            searchedResults = fakeFoodData.hits + fakeFoodData.hits + fakeFoodData.hits,
+            searchResults = MutableList(4) {
+                Food(
+                    name = "Pasta alla Gracia Recipe",
+                    image = "",
+                    calories = 50,
+                    ingredients = MutableList(4) {
+                        Ingredients()
+                    },
+                    nutrition = emptyList(),
+                )
+            },
             onSearchedFoodCardClick = {},
             onFilterButtonClick = {}
         )

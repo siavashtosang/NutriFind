@@ -66,12 +66,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.nutrifind.R
-import com.example.nutrifind.data.model.Hits
 import com.example.nutrifind.data.network.DataResponse
-import com.example.nutrifind.data.offline.FoodCategoryItem
-import com.example.nutrifind.data.offline.TagFilterItem
-import com.example.nutrifind.data.offline.fakeFoodData
-import com.example.nutrifind.data.offline.foodCategoryItems
 import com.example.nutrifind.ui.component.CuisineTypesSheet
 import com.example.nutrifind.ui.component.FiltersSheet
 import com.example.nutrifind.ui.component.FoodCategoryCard
@@ -83,9 +78,12 @@ import com.example.nutrifind.ui.component.SearchedHistoryList
 import com.example.nutrifind.ui.component.TopFoodCard
 import com.example.nutrifind.ui.component.VerticalFoodCard
 import com.example.nutrifind.ui.theme.NutriFindTheme
+import com.example.nutrifind.utils.Food
+import com.example.nutrifind.utils.FoodCategoryItem
+import com.example.nutrifind.utils.TagFilterItem
+import com.example.nutrifind.utils.foodCategoryItems
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -99,9 +97,11 @@ fun HomeScreenRote(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    when (uiState.foodsSuggestion) {
+    when (uiState.results) {
         is DataResponse.Error -> {
-            NutriFindErrorScreen(onRetry = viewModel::onRetryHome)
+            NutriFindErrorScreen(
+                onRetry = viewModel::onRetryHome
+            )
         }
 
         DataResponse.Loading -> {
@@ -116,11 +116,12 @@ fun HomeScreenRote(
                 foodsSuggestionTitle = uiState.foodSuggestionTitle,
                 isActiveSearchBar = uiState.isActiveSearchBar,
                 searchedHistories = uiState.searchHistory,
-                foodsSuggestion = uiState.foodsSuggestion as DataResponse.Success,
+                foodsSuggestion = uiState.foodsSuggestion,
+                searchedResultsState = uiState.searchedResultsState,
                 searchedResults = uiState.searchedResults,
-                saladList = uiState.salads as DataResponse.Success,
-                pizzaList = uiState.pizzas as DataResponse.Success,
-                chineseList = uiState.chinese as DataResponse.Success,
+                saladList = uiState.salads,
+                pizzaList = uiState.pizzas,
+                chineseList = uiState.chinese,
                 dietsFilterList = uiState.dietsFilters,
                 dishTypesFilterList = uiState.dishTypesFilters,
                 mealTypesFilterList = uiState.mealTypesFilters,
@@ -148,7 +149,6 @@ fun HomeScreenRote(
 
         }
     }
-
 }
 
 @Composable
@@ -161,11 +161,12 @@ fun HomeScreen(
     isActiveSearchBar: Boolean,
     filterItems: Int?,
     searchedHistories: List<SearchedHistory>,
-    foodsSuggestion: DataResponse.Success,
-    searchedResults: DataResponse,
-    saladList: DataResponse.Success,
-    pizzaList: DataResponse.Success,
-    chineseList: DataResponse.Success,
+    foodsSuggestion: List<Food>,
+    searchedResultsState: DataResponse,
+    searchedResults: List<Food>,
+    saladList: List<Food>,
+    pizzaList: List<Food>,
+    chineseList: List<Food>,
     dietsFilterList: List<TagFilterItem>,
     dishTypesFilterList: List<TagFilterItem>,
     mealTypesFilterList: List<TagFilterItem>,
@@ -310,7 +311,8 @@ fun HomeScreen(
                         isActiveSearchBar = isActiveSearchBar,
                         searchedHistory = searchedHistories,
                         filterItems = filterItems,
-                        searchedResults = searchedResults,
+                        searchedResultsState = searchedResultsState,
+                        searchResults = searchedResults,
                         onSearchTextChange = onSearchTextChange,
                         onSearchTriggered = onSearchTriggered,
                         onFoodCardClick = onFoodCardClick,
@@ -417,7 +419,8 @@ private fun HomeScreenSearchBar(
     isActiveSearchBar: Boolean,
     selectedCuisineType: String,
     filterItems: Int?,
-    searchedResults: DataResponse,
+    searchedResultsState: DataResponse,
+    searchResults: List<Food>,
     searchedHistory: List<SearchedHistory>,
     dietsFilterList: List<TagFilterItem>,
     dishTypesFilterList: List<TagFilterItem>,
@@ -492,10 +495,10 @@ private fun HomeScreenSearchBar(
             if (isActiveSearchBar) {
                 if (showSearchResult) {
 
-                    when (searchedResults) {
+                    when (searchedResultsState) {
                         is DataResponse.Error -> {
                             NutriFindErrorScreen(
-                                message = searchedResults.message,
+                                message = searchedResultsState.message,
                                 onRetry = onSearchRetry
                             )
                         }
@@ -505,92 +508,80 @@ private fun HomeScreenSearchBar(
                         }
 
                         is DataResponse.Success -> {
-                            searchedResults.apiEdamam?.hits?.let { hits ->
-                                if (hits.isNotEmpty()) {
-                                    Box {
-                                        SearchResults(
-                                            searchedFood = searchText,
-                                            searchedResults = hits,
-                                            filterItems = filterItems,
-                                            onSearchedFoodCardClick = { onFoodCardClick(it) },
-                                            onFilterButtonClick = {
+                            Box {
+                                SearchResults(
+                                    searchedFood = searchText,
+                                    searchResults = searchResults,
+                                    filterItems = filterItems,
+                                    onSearchedFoodCardClick = onFoodCardClick,
+                                    onFilterButtonClick = {
+                                        scope.launch {
+                                            showFilterSheet = true
+                                        }
+                                    }
+                                )
+
+                                if (showFilterSheet) {
+                                    ModalBottomSheet(
+                                        onDismissRequest = { showFilterSheet = false },
+                                        sheetState = filterSheetState
+                                    ) {
+                                        FiltersSheet(
+                                            dietsFilterList = dietsFilterList,
+                                            dishTypesFilterList = dishTypesFilterList,
+                                            mealTypesFilterList = mealTypesFilterList,
+                                            selectedCuisineType = selectedCuisineType,
+                                            onDietFilterClick = onDietFilterClick,
+                                            onDishFilterClick = onDishFilterClick,
+                                            onMealFilterCLick = onMealFilterCLick,
+                                            onApplyFilterClick = {
                                                 scope.launch {
-                                                    showFilterSheet = true
+                                                    onApplyFilterClick()
+                                                    filterSheetState.hide()
+                                                }.invokeOnCompletion {
+                                                    if (!filterSheetState.isVisible) {
+                                                        showFilterSheet = false
+                                                    }
+                                                }
+                                            },
+                                            onClearAllFilterClick = onClearAllFilterClick,
+                                            onCuisineTypesClick = {
+                                                showCuisineTypeSheet = true
+                                            },
+                                            onCloseFilterSheet = {
+                                                scope.launch {
+                                                    filterSheetState.hide()
+                                                }.invokeOnCompletion {
+                                                    if (!filterSheetState.isVisible) {
+                                                        showFilterSheet = false
+                                                    }
                                                 }
                                             }
                                         )
-
-                                        if (showFilterSheet) {
-                                            ModalBottomSheet(
-                                                onDismissRequest = { showFilterSheet = false },
-                                                sheetState = filterSheetState
-                                            ) {
-                                                FiltersSheet(
-                                                    dietsFilterList = dietsFilterList,
-                                                    dishTypesFilterList = dishTypesFilterList,
-                                                    mealTypesFilterList = mealTypesFilterList,
-                                                    selectedCuisineType = selectedCuisineType,
-                                                    onDietFilterClick = onDietFilterClick,
-                                                    onDishFilterClick = onDishFilterClick,
-                                                    onMealFilterCLick = onMealFilterCLick,
-                                                    onApplyFilterClick = {
-                                                        scope.launch {
-                                                            onApplyFilterClick()
-                                                            filterSheetState.hide()
-                                                        }.invokeOnCompletion {
-                                                            if (!filterSheetState.isVisible) {
-                                                                showFilterSheet = false
-                                                            }
-                                                        }
-                                                    },
-                                                    onClearAllFilterClick = onClearAllFilterClick,
-                                                    onCuisineTypesClick = {
-                                                        showCuisineTypeSheet = true
-                                                    },
-                                                    onCloseFilterSheet = {
-                                                        scope.launch {
-                                                            filterSheetState.hide()
-                                                        }.invokeOnCompletion {
-                                                            if (!filterSheetState.isVisible) {
-                                                                showFilterSheet = false
-                                                            }
-                                                        }
-                                                    }
-                                                )
-                                            }
-                                        }
-
-                                        if (showCuisineTypeSheet) {
-                                            ModalBottomSheet(
-                                                onDismissRequest = { showCuisineTypeSheet = false },
-                                                sheetState = cuisineSheetState
-                                            ) {
-                                                CuisineTypesSheet(
-                                                    cuisineTypeList = cuisineTypeList,
-                                                    onCuisineTypeClick = {
-                                                        scope.launch {
-                                                            onCuisineTypeClick(it)
-                                                            delay(500)
-                                                            cuisineSheetState.hide()
-                                                        }.invokeOnCompletion {
-                                                            if (!cuisineSheetState.isVisible) {
-                                                                showCuisineTypeSheet = false
-                                                            }
-                                                        }
-                                                    }
-                                                )
-                                            }
-                                        }
                                     }
-                                } else {
-                                    NutriFindErrorScreen(
-                                        onRetry = onSearchRetry
-                                    )
                                 }
-                            } ?: run {
-                                NutriFindErrorScreen(
-                                    onRetry = onSearchRetry
-                                )
+
+                                if (showCuisineTypeSheet) {
+                                    ModalBottomSheet(
+                                        onDismissRequest = { showCuisineTypeSheet = false },
+                                        sheetState = cuisineSheetState
+                                    ) {
+                                        CuisineTypesSheet(
+                                            cuisineTypeList = cuisineTypeList,
+                                            onCuisineTypeClick = {
+                                                scope.launch {
+                                                    onCuisineTypeClick(it)
+                                                    delay(500)
+                                                    cuisineSheetState.hide()
+                                                }.invokeOnCompletion {
+                                                    if (!cuisineSheetState.isVisible) {
+                                                        showCuisineTypeSheet = false
+                                                    }
+                                                }
+                                            }
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
@@ -620,10 +611,10 @@ private fun HomeScreenSearchBar(
 private fun HomeScreenContent(
     modifier: Modifier = Modifier,
     foodsSuggestionTitle: String,
-    foodsSuggestion: DataResponse.Success,
-    saladList: DataResponse.Success,
-    pizzaList: DataResponse.Success,
-    chineseList: DataResponse.Success,
+    foodsSuggestion: List<Food>,
+    saladList: List<Food>,
+    pizzaList: List<Food>,
+    chineseList: List<Food>,
     onAllCategoriesClick: () -> Unit,
     onMoreCategoriesButtonClick: () -> Unit,
     onCategoryItemClick: (categoryTitle: String) -> Unit,
@@ -706,13 +697,13 @@ private fun HomeScreenContent(
             ),
         ) {
 
-            items(foodsSuggestion.apiEdamam?.hits?.take(5) ?: emptyList()) { food: Hits ->
+            items(foodsSuggestion.take(5)) { food: Food ->
                 VerticalFoodCard(
-                    title = food.recipe?.label ?: "",
-                    image = food.recipe?.images?.small?.url ?: "",
-                    calories = food.recipe?.calories?.roundToInt() ?: 0,
-                    ingredients = food.recipe?.ingredientLines?.size ?: 0,
-                    onClick = { onFoodCardClick(food.recipe?.label!!) },
+                    title = food.name,
+                    image = food.image,
+                    calories = food.calories,
+                    ingredients = food.ingredients.size,
+                    onClick = { onFoodCardClick(food.name) },
                 )
             }
         }
@@ -742,11 +733,14 @@ private fun PreViewHomeScreen() {
             searchedHistories = MutableList(4) {
                 SearchedHistory(searchedText = "Hot Dog", searchTime = "Today")
             },
-            foodsSuggestion = DataResponse.Success(fakeFoodData),
-            searchedResults = DataResponse.Success(fakeFoodData),
-            saladList = DataResponse.Success(fakeFoodData),
-            pizzaList = DataResponse.Success(fakeFoodData),
-            chineseList = DataResponse.Success(fakeFoodData),
+            foodsSuggestion = emptyList(),
+            searchedResultsState = DataResponse.Loading,
+            searchedResults = MutableList(3){
+                Food()
+            },
+            saladList = emptyList(),
+            pizzaList = emptyList(),
+            chineseList = emptyList(),
             dietsFilterList = emptyList(),
             dishTypesFilterList = emptyList(),
             mealTypesFilterList = emptyList(),

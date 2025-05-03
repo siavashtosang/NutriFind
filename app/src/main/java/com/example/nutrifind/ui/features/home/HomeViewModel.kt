@@ -5,9 +5,10 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nutrifind.data.network.DataResponse
-import com.example.nutrifind.data.nutri_find_repository.repository.NutriFindRepository
-import com.example.nutrifind.data.offline.TagFilterItem
-import com.example.nutrifind.data.offline.foodNames
+import com.example.nutrifind.repository.NutriFindRepository
+import com.example.nutrifind.utils.TagFilterItem
+import com.example.nutrifind.utils.convertToFoodClass
+import com.example.nutrifind.utils.foodNames
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,7 +33,8 @@ class HomeViewModel @Inject constructor(
     private val userPreferences = repository.userPreferencesFlow
 
     init {
-        initializeFoodData()
+
+        loadHome()
 
         viewModelScope.launch {
             repository.fetchInitialUserPreferences()
@@ -40,14 +42,13 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun initializeFoodData() {
+    private fun loadHome() {
         viewModelScope.launch {
-            launch { initializeFoodSuggestion() }
-            launch { initializeTopFoods() }
+            launch { initializeFoodData() }
         }
     }
 
-    private suspend fun initializeFoodSuggestion() {
+    private suspend fun initializeFoodData() {
 
         val foodSuggestionTitle = foodNames.random()
 
@@ -56,6 +57,7 @@ class HomeViewModel @Inject constructor(
         }
 
         getFoodSuggestion(foodSuggestionTitle)
+        initializeTopFoods()
     }
 
     private suspend fun initializeTopFoods() {
@@ -69,30 +71,64 @@ class HomeViewModel @Inject constructor(
 
     private suspend fun getFoodSuggestion(foodName: String) {
 
-        _uiState.update { currentState ->
-            currentState.copy(foodsSuggestion = DataResponse.Loading)
-        }
-
         repository.fetchFoodData(foodName = foodName) { result ->
 
-            _uiState.update { it.copy(foodsSuggestion = result) }
+            if (result is DataResponse.Success) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        foodsSuggestion = result.apiEdamam?.convertToFoodClass() ?: emptyList(),
+                        results = result
+                    )
+                }
+            } else {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        results = result
+                    )
+                }
+            }
         }
     }
 
     private suspend fun getTopFood(foodName: String) {
 
-        when (foodName) {
-            "salad" -> _uiState.update { it.copy(salads = DataResponse.Loading) }
-            "pizza" -> _uiState.update { it.copy(pizzas = DataResponse.Loading) }
-            "chinese" -> _uiState.update { it.copy(chinese = DataResponse.Loading) }
-        }
-
         repository.fetchFoodData(foodName) { result ->
 
             when (foodName) {
-                "salad" -> _uiState.update { it.copy(salads = result) }
-                "pizza" -> _uiState.update { it.copy(pizzas = result) }
-                "chinese" -> _uiState.update { it.copy(chinese = result) }
+
+                "salad" -> {
+                    if (result is DataResponse.Success) {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                salads = result.apiEdamam?.convertToFoodClass() ?: emptyList(),
+                                results = result
+                            )
+                        }
+                    }
+                }
+
+                "pizza" -> {
+
+                    if (result is DataResponse.Success) {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                pizzas = result.apiEdamam?.convertToFoodClass() ?: emptyList(),
+                                results = result
+                            )
+                        }
+                    }
+                }
+
+                "chinese" -> {
+                    if (result is DataResponse.Success) {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                chinese = result.apiEdamam?.convertToFoodClass() ?: emptyList(),
+                                results = result
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -108,13 +144,23 @@ class HomeViewModel @Inject constructor(
         val searchText = _uiState.value.searchText
 
         _uiState.update { currentSate ->
-            currentSate.copy(searchedResults = DataResponse.Loading)
+            currentSate.copy(searchedResultsState = DataResponse.Loading)
         }
 
         viewModelScope.launch {
             repository.fetchFoodData(foodName = searchText) { result ->
-                _uiState.update { currentState ->
-                    currentState.copy(searchedResults = result)
+                if (result is DataResponse.Success) {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            searchedResults = result.apiEdamam?.convertToFoodClass() ?: emptyList(),
+                            searchedResultsState = result
+                        )
+                    }
+                } else {
+                    _uiState.update { currentState ->
+                        currentState.copy(searchedResultsState = result)
+                    }
+
                 }
             }
         }
@@ -151,13 +197,22 @@ class HomeViewModel @Inject constructor(
     fun onReUseSearchedHistory(searchedHistoryText: String) {
 
         _uiState.update { currentSate ->
-            currentSate.copy(searchedResults = DataResponse.Loading)
+            currentSate.copy(searchedResultsState = DataResponse.Loading)
         }
 
         viewModelScope.launch {
             repository.fetchFoodData(foodName = searchedHistoryText) { result ->
-                _uiState.update { currentState ->
-                    currentState.copy(searchedResults = result)
+                if (result is DataResponse.Success) {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            searchedResults = result.apiEdamam?.convertToFoodClass() ?: emptyList(),
+                            searchedResultsState = result
+                        )
+                    }
+                } else {
+                    _uiState.update { currentState ->
+                        currentState.copy(searchedResultsState = result)
+                    }
                 }
             }
         }
@@ -244,7 +299,7 @@ class HomeViewModel @Inject constructor(
         _uiState.update { currentState ->
             currentState.copy(
                 filterItems = selectedFilterCount,
-                searchedResults = DataResponse.Loading
+                searchedResultsState = DataResponse.Loading
             )
         }
 
@@ -258,8 +313,17 @@ class HomeViewModel @Inject constructor(
                 cuisineTypeFilter = _uiState.value.cuisineTypeFilters.find { it.selected }?.title
             ) { result ->
 
-                _uiState.update { currentState ->
-                    currentState.copy(searchedResults = result)
+                if (result is DataResponse.Success) {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            searchedResults = result.apiEdamam?.convertToFoodClass() ?: emptyList(),
+                            searchedResultsState = result
+                        )
+                    }
+                } else {
+                    _uiState.update { currentState ->
+                        currentState.copy(searchedResultsState = result)
+                    }
                 }
             }
         }
@@ -277,8 +341,8 @@ class HomeViewModel @Inject constructor(
 
     }
 
-    fun onRetryHome(){
-        initializeFoodData()
+    fun onRetryHome() {
+        loadHome()
     }
 
     private fun List<TagFilterItem>.toggleExactly(one: TagFilterItem) =

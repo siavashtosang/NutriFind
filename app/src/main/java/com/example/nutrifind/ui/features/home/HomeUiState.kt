@@ -1,18 +1,19 @@
 package com.example.nutrifind.ui.features.home
 
 import androidx.compose.runtime.Immutable
-import com.example.nutrifind.data.model.Hits
 import com.example.nutrifind.data.network.DataResponse
-import com.example.nutrifind.data.offline.TagFilterItem
-import com.example.nutrifind.data.offline.cuisineTypes
-import com.example.nutrifind.data.offline.dietsFilterList
-import com.example.nutrifind.data.offline.dishTypesFilterList
-import com.example.nutrifind.data.offline.mealTypesFilterList
+import com.example.nutrifind.utils.Food
+import com.example.nutrifind.utils.TagFilterItem
+import com.example.nutrifind.utils.cuisineTypes
+import com.example.nutrifind.utils.dietsFilterList
+import com.example.nutrifind.utils.dishTypesFilterList
+import com.example.nutrifind.utils.mealTypesFilterList
 
 @Immutable
 data class HomeUiState(
     val searchText: String = "",
     val isDarkTheme: Boolean = false,
+    val results: DataResponse = DataResponse.Loading,
     val foodSuggestionTitle: String = "",
     val selectedCuisineType: String = "",
     val isActiveSearchBar: Boolean = false,
@@ -22,11 +23,12 @@ data class HomeUiState(
     val mealTypesFilters: List<TagFilterItem> = mealTypesFilterList,
     val cuisineTypeFilters: List<TagFilterItem> = cuisineTypes,
     val searchHistory: List<SearchedHistory> = emptyList(),
-    val searchedResults: DataResponse = DataResponse.Loading,
-    val foodsSuggestion: DataResponse = DataResponse.Loading,
-    val salads: DataResponse = DataResponse.Loading,
-    val pizzas: DataResponse = DataResponse.Loading,
-    val chinese: DataResponse = DataResponse.Loading,
+    val searchedResultsState: DataResponse = DataResponse.Loading,
+    val searchedResults: List<Food> = emptyList(),
+    val foodsSuggestion: List<Food> = emptyList(),
+    val salads: List<Food> = emptyList(),
+    val pizzas: List<Food> = emptyList(),
+    val chinese: List<Food> = emptyList(),
 )
 
 @Immutable

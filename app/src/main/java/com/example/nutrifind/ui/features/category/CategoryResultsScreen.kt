@@ -21,14 +21,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.nutrifind.data.model.Hits
+import com.example.nutrifind.data.model.Ingredients
 import com.example.nutrifind.data.network.DataResponse
-import com.example.nutrifind.data.offline.fakeFoodData
 import com.example.nutrifind.ui.component.HorizontalFoodCard
 import com.example.nutrifind.ui.component.NutriFindErrorScreen
 import com.example.nutrifind.ui.component.NutriFindLoadingScreen
 import com.example.nutrifind.ui.component.NutriFindTopAppBar
-import kotlin.math.roundToInt
+import com.example.nutrifind.utils.Food
+import com.example.nutrifind.utils.convertToFoodClass
 
 @Composable
 fun CategoryResultsScreenRout(
@@ -54,7 +54,8 @@ fun CategoryResultsScreenRout(
             CategoryResultsScreen(
                 modifier = modifier,
                 title = uiState.categoryResultsScreenTitle,
-                results = (uiState.results as DataResponse.Success).apiEdamam?.hits,
+                foods = (uiState.results as DataResponse.Success).apiEdamam?.convertToFoodClass()
+                    ?: emptyList(),
                 onFoodCardClick = onFoodCardClick,
                 onBack = onBack
             )
@@ -69,7 +70,7 @@ fun CategoryResultsScreenRout(
 private fun CategoryResultsScreen(
     modifier: Modifier = Modifier,
     title: String,
-    results: List<Hits>?,
+    foods: List<Food>,
     onFoodCardClick: (String) -> Unit,
     onBack: () -> Unit,
 ) {
@@ -95,7 +96,6 @@ private fun CategoryResultsScreen(
         }
     ) { paddingValues ->
 
-
         LazyColumn(
             modifier = modifier.padding(paddingValues),
             contentPadding = PaddingValues(horizontal = 16.dp),
@@ -111,18 +111,16 @@ private fun CategoryResultsScreen(
                 )
             }
 
-            items(results ?: emptyList()) { hits ->
+            items(foods) { food: Food ->
                 HorizontalFoodCard(
-                    title = hits.recipe?.label ?: "",
-                    image = hits.recipe?.images?.thumbnail?.url ?: "",
-                    calories = hits.recipe?.calories?.roundToInt() ?: 0,
-                    ingredients = hits.recipe?.ingredientLines?.size ?: 0,
-                    onClick = { onFoodCardClick(hits.recipe?.label!!) }
+                    title = food.name,
+                    image = food.image,
+                    calories = food.calories,
+                    ingredients = food.ingredients.size,
+                    onClick = { onFoodCardClick(food.name) }
                 )
-
             }
         }
-
     }
 }
 
@@ -132,7 +130,15 @@ private fun PreviewCategoryResultsScreen(modifier: Modifier = Modifier) {
     MaterialTheme {
         CategoryResultsScreen(
             title = "Burger",
-            results = fakeFoodData.hits,
+            foods = MutableList(4) {
+                Food(
+                    name = "Pasta alla Gracia Recipe",
+                    image = "",
+                    calories = 50,
+                    ingredients = listOf(Ingredients()),
+                    nutrition = emptyList(),
+                )
+            },
             onBack = {},
             onFoodCardClick = {}
         )

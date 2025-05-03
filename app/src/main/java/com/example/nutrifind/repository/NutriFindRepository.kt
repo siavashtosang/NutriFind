@@ -1,4 +1,4 @@
-package com.example.nutrifind.data.nutri_find_repository.repository
+package com.example.nutrifind.repository
 
 import android.content.Context
 import androidx.datastore.core.DataStore

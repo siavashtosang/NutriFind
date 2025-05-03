@@ -1,4 +1,4 @@
-package com.example.nutrifind.data.offline
+package com.example.nutrifind.utils
 
 import com.example.nutrifind.R
 
