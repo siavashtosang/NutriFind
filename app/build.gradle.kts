@@ -20,9 +20,9 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "BASE_URL", "\"https://api.edamam.com/\"")
-        buildConfigField("String", "APP_ID", "\"aeff32ad\"")
-        buildConfigField("String", "APP_KEY", "\"b5a9932ceec96638ae9e30ea128926ba\"")
+        buildConfigField("String", "BASE_URL", "\"${project.property("BASE_URL")}\"")
+        buildConfigField("String", "APP_ID", "\"${project.property("APP_ID")}\"")
+        buildConfigField("String", "APP_KEY", "\"${project.property("APP_KEY")}\"")
     }
 
     buildTypes {
