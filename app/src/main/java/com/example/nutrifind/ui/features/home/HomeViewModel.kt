@@ -57,8 +57,8 @@ class HomeViewModel @Inject constructor(
             currentState.copy(foodSuggestionTitle = foodSuggestionTitle)
         }
 
-        /* getFoodSuggestion(foodSuggestionTitle)
-         initializeTopFoods()*/
+        getFoodSuggestion(foodSuggestionTitle)
+        initializeTopFoods()
         _uiState.update { it.copy(results = DataResponse.Success(apiEdamam = ApiEdamam())) }
     }
 
