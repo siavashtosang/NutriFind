@@ -15,11 +15,11 @@ import com.example.nutrifind.ui.theme.NutriFindTheme
 fun NutriFindApp(
     mainViewModel: MainViewModel = hiltViewModel(),
 ) {
-    val isDarkTheme by mainViewModel.isDarkTheme.collectAsState()
+    val isDarkMode by mainViewModel.isDarkMode.collectAsState()
 
     val navController = rememberNavController()
 
-    NutriFindTheme(darkTheme = isDarkTheme) {
+    NutriFindTheme(darkTheme = isDarkMode) {
         NutriFindNavHost(navController = navController)
     }
 

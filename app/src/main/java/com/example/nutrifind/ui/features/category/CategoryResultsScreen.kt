@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.nutrifind.data.local.Food
+import com.example.nutrifind.data.local.offline.Food
 import com.example.nutrifind.data.remote.model.Ingredients
 import com.example.nutrifind.data.remote.network.DataResponse
 import com.example.nutrifind.ui.component.HorizontalFoodCard

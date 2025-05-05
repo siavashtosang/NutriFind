@@ -1,7 +1,7 @@
 package com.example.nutrifind.utils
 
-import com.example.nutrifind.data.local.Food
-import com.example.nutrifind.data.local.Nutrition
+import com.example.nutrifind.data.local.offline.Food
+import com.example.nutrifind.data.local.offline.Nutrition
 import com.example.nutrifind.data.remote.model.ApiEdamam
 import com.example.nutrifind.data.remote.model.Hits
 

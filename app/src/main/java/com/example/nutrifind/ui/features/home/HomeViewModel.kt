@@ -4,11 +4,11 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.nutrifind.data.local.TagFilterItem
-import com.example.nutrifind.data.local.foodNames
+import com.example.nutrifind.data.local.offline.TagFilterItem
+import com.example.nutrifind.data.local.offline.foodNames
 import com.example.nutrifind.data.remote.model.ApiEdamam
 import com.example.nutrifind.data.remote.network.DataResponse
-import com.example.nutrifind.repository.NutriFindRepository
+import com.example.nutrifind.data.repository.NutriFindRepository
 import com.example.nutrifind.utils.convertToFoodClass
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,7 +39,7 @@ class HomeViewModel @Inject constructor(
 
         viewModelScope.launch {
             repository.fetchInitialUserPreferences()
-            _uiState.update { it.copy(isDarkTheme = userPreferences.first().showDarkMode) }
+            _uiState.update { it.copy(darkMode = userPreferences.first().showDarkMode) }
         }
     }
 
@@ -331,13 +331,13 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun onDarkThemeChange(isDarkTheme: Boolean) {
+    fun onDarkThemeChange(isDarkMode: Boolean) {
         viewModelScope.launch {
 
-            repository.updateDarkTheme(darkTheme = isDarkTheme)
+            repository.updateDarkTheme(darkMode = isDarkMode)
 
             _uiState.update { currentState ->
-                currentState.copy(isDarkTheme = userPreferences.first().showDarkMode)
+                currentState.copy(darkMode = userPreferences.first().showDarkMode)
             }
         }
 

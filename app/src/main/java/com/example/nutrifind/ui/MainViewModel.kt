@@ -2,7 +2,7 @@ package com.example.nutrifind.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.nutrifind.repository.NutriFindRepository
+import com.example.nutrifind.data.repository.NutriFindRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +22,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    val isDarkTheme: StateFlow<Boolean> =
+    val isDarkMode: StateFlow<Boolean> =
         repository.userPreferencesFlow
             .map { prefs -> prefs.showDarkMode }
             .stateIn(

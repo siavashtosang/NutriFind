@@ -1,18 +1,18 @@
 package com.example.nutrifind.ui.features.home
 
 import androidx.compose.runtime.Immutable
-import com.example.nutrifind.data.local.Food
-import com.example.nutrifind.data.local.TagFilterItem
-import com.example.nutrifind.data.local.cuisineTypes
-import com.example.nutrifind.data.local.dietsFilterList
-import com.example.nutrifind.data.local.dishTypesFilterList
-import com.example.nutrifind.data.local.mealTypesFilterList
+import com.example.nutrifind.data.local.offline.Food
+import com.example.nutrifind.data.local.offline.TagFilterItem
+import com.example.nutrifind.data.local.offline.cuisineTypes
+import com.example.nutrifind.data.local.offline.dietsFilterList
+import com.example.nutrifind.data.local.offline.dishTypesFilterList
+import com.example.nutrifind.data.local.offline.mealTypesFilterList
 import com.example.nutrifind.data.remote.network.DataResponse
 
 @Immutable
 data class HomeUiState(
     val searchText: String = "",
-    val isDarkTheme: Boolean = false,
+    val darkMode: Boolean = false,
     val results: DataResponse = DataResponse.Loading,
     val foodSuggestionTitle: String = "",
     val selectedCuisineType: String = "",

@@ -32,7 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.nutrifind.R
-import com.example.nutrifind.data.local.Food
+import com.example.nutrifind.data.local.offline.Food
 import com.example.nutrifind.data.remote.model.Ingredients
 import com.example.nutrifind.ui.features.home.SearchedHistory
 import com.example.nutrifind.ui.theme.NutriFindTheme

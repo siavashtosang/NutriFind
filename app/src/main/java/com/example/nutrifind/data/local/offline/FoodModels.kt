@@ -1,12 +1,12 @@
-package com.example.nutrifind.data.local
+package com.example.nutrifind.data.local.offline
 
 
 import com.example.nutrifind.R
 import com.example.nutrifind.data.remote.model.Ingredients
 
 
-val foodNames: List<String> =
-    listOf(
+val foodNames: List<String>
+    get() = listOf(
         "Pasta",
         "Spaghetti",
         "Breakfast",

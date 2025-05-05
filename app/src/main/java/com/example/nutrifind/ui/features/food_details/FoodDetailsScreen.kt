@@ -50,7 +50,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.nutrifind.R
-import com.example.nutrifind.data.local.Food
+import com.example.nutrifind.data.local.offline.Food
 import com.example.nutrifind.data.remote.model.Ingredients
 import com.example.nutrifind.data.remote.network.DataResponse
 import com.example.nutrifind.ui.component.NutriFindErrorScreen

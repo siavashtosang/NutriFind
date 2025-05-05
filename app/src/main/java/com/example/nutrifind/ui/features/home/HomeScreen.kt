@@ -66,10 +66,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.nutrifind.R
-import com.example.nutrifind.data.local.Food
-import com.example.nutrifind.data.local.FoodCategoryItem
-import com.example.nutrifind.data.local.TagFilterItem
-import com.example.nutrifind.data.local.foodCategoryItems
+import com.example.nutrifind.data.local.offline.Food
+import com.example.nutrifind.data.local.offline.FoodCategoryItem
+import com.example.nutrifind.data.local.offline.TagFilterItem
+import com.example.nutrifind.data.local.offline.foodCategoryItems
 import com.example.nutrifind.data.remote.network.DataResponse
 import com.example.nutrifind.ui.component.CuisineTypesSheet
 import com.example.nutrifind.ui.component.FiltersSheet
@@ -111,7 +111,7 @@ fun HomeScreenRote(
         is DataResponse.Success -> {
             HomeScreen(
                 modifier = modifier,
-                isDarkTheme = uiState.isDarkTheme,
+                isDarkTheme = uiState.darkMode,
                 searchText = uiState.searchText,
                 foodsSuggestionTitle = uiState.foodSuggestionTitle,
                 isActiveSearchBar = uiState.isActiveSearchBar,

@@ -19,7 +19,7 @@ object NetworkConfig {
 
 @Module
 @InstallIn(SingletonComponent::class)
-class ApiModule {
+object NetWorkModule {
 
 
     @Singleton
