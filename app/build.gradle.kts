@@ -86,5 +86,7 @@ dependencies {
 
     implementation(libs.androidx.google.font)
 
+    implementation(libs.androidx.splashscreen)
+
     implementation(libs.androidx.datastore)
 }
