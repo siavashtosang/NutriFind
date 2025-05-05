@@ -1,4 +1,4 @@
-package com.example.nutrifind.data.repository
+package com.example.nutrifind.data.repositories
 
 import androidx.datastore.preferences.core.Preferences
 import com.example.nutrifind.data.local.preferences.PreferencesKeys
@@ -14,19 +14,19 @@ import javax.inject.Singleton
 
 
 @Singleton
-class NutriFindRepository @Inject constructor(
+class DefaultNutriFindRepository @Inject constructor(
     private val apiService: EdamamApi,
     private val prefsDataSource: UserPreferencesDataSource
-) {
+) : NutriFindRepository {
 
-    suspend fun fetchFoodData(
+
+    override suspend fun fetchFoodData(
         foodName: String,
-        dietFilter: String? = null,
-        dishTypeFilter: String? = null,
-        mealTypeFilter: String? = null,
-        cuisineTypeFilter: String? = null,
-        updateState: (DataResponse) -> Unit
-    ) {
+        dietFilter: String?,
+        dishTypeFilter: String?,
+        mealTypeFilter: String?,
+        cuisineTypeFilter: String?,
+    ): DataResponse {
         try {
             val result = apiService.getFoods(
                 searchFood = foodName,
@@ -35,27 +35,27 @@ class NutriFindRepository @Inject constructor(
                 mealTypeFilter = mealTypeFilter,
                 cuisineTypeFilter = cuisineTypeFilter
             )
-            updateState(DataResponse.Success(result))
+            return (DataResponse.Success(result))
         } catch (e: IOException) {
-            updateState(DataResponse.Error(message = "Network error"))
+            return (DataResponse.Error(message = "Network error"))
 
         } catch (e: HttpException) {
-            updateState(DataResponse.Error(message = "Server error"))
+            return (DataResponse.Error(message = "Server error"))
         } catch (e: Exception) {
-            updateState(DataResponse.Error(message = "Unexpected error"))
+            return (DataResponse.Error(message = "Unexpected error"))
         }
     }
 
-    val userPreferencesFlow: Flow<UserPreferences> =
-        prefsDataSource.preferencesFlow()
-
-    suspend fun fetchInitialUserPreferences(): UserPreferences =
+    override suspend fun fetchInitialUserPreferences(): UserPreferences =
         prefsDataSource.getPreferences()
 
-    suspend fun updateDarkTheme(darkMode: Boolean) =
+    override suspend fun updateDarkTheme(darkMode: Boolean) =
         prefsDataSource.setDarkMode(darkMode)
 
-    suspend fun removePreferences(prefsKey: Preferences.Key<PreferencesKeys>) =
+    override fun userPreferencesFlow(): Flow<UserPreferences> =
+        prefsDataSource.preferencesFlow()
+
+    override suspend fun removePreferences(prefsKey: Preferences.Key<PreferencesKeys>) =
         prefsDataSource.removePreferences(prefsKey)
 
 }

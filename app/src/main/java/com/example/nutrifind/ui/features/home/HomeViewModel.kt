@@ -8,7 +8,7 @@ import com.example.nutrifind.data.local.offline.TagFilterItem
 import com.example.nutrifind.data.local.offline.foodNames
 import com.example.nutrifind.data.remote.model.ApiEdamam
 import com.example.nutrifind.data.remote.network.DataResponse
-import com.example.nutrifind.data.repository.NutriFindRepository
+import com.example.nutrifind.data.repositories.DefaultNutriFindRepository
 import com.example.nutrifind.utils.convertToFoodClass
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,14 +24,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: NutriFindRepository
+    private val repository: DefaultNutriFindRepository
 ) : ViewModel() {
 
 
     private val _uiState: MutableStateFlow<HomeUiState> = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
-    private val userPreferences = repository.userPreferencesFlow
+    private val userPreferences = repository.userPreferencesFlow()
 
     init {
 
@@ -73,62 +73,61 @@ class HomeViewModel @Inject constructor(
 
     private suspend fun getFoodSuggestion(foodName: String) {
 
-        repository.fetchFoodData(foodName = foodName) { result ->
+        val results = repository.fetchFoodData(foodName = foodName)
 
-            if (result is DataResponse.Success) {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        foodsSuggestion = result.apiEdamam?.convertToFoodClass() ?: emptyList(),
-                        results = result
-                    )
-                }
-            } else {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        results = result
-                    )
-                }
+        _uiState.update { currentState ->
+            currentState.copy(results = results)
+        }
+
+        if (results is DataResponse.Success) {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    foodsSuggestion = results.apiEdamam?.convertToFoodClass() ?: emptyList()
+                )
             }
         }
     }
 
     private suspend fun getTopFood(foodName: String) {
 
-        repository.fetchFoodData(foodName) { result ->
+        val results = repository.fetchFoodData(foodName = foodName)
 
-            when (foodName) {
+        _uiState.update { currentState ->
+            currentState.copy(results = results)
+        }
 
-                "salad" -> {
-                    if (result is DataResponse.Success) {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                salads = result.apiEdamam?.convertToFoodClass() ?: emptyList(),
-                                results = result
-                            )
-                        }
+        when (foodName) {
+
+            "salad" -> {
+                if (results is DataResponse.Success) {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            salads = results.apiEdamam?.convertToFoodClass() ?: emptyList(),
+                            results = results
+                        )
                     }
                 }
+            }
 
-                "pizza" -> {
+            "pizza" -> {
 
-                    if (result is DataResponse.Success) {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                pizzas = result.apiEdamam?.convertToFoodClass() ?: emptyList(),
-                                results = result
-                            )
-                        }
+                if (results is DataResponse.Success) {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            pizzas = results.apiEdamam?.convertToFoodClass() ?: emptyList(),
+                            results = results
+                        )
                     }
                 }
+            }
 
-                "chinese" -> {
-                    if (result is DataResponse.Success) {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                chinese = result.apiEdamam?.convertToFoodClass() ?: emptyList(),
-                                results = result
-                            )
-                        }
+            "chinese" -> {
+                if (results is DataResponse.Success) {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            chinese = results.apiEdamam?.convertToFoodClass() ?: emptyList(),
+                            results = results
+                        )
                     }
                 }
             }
@@ -150,19 +149,19 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            repository.fetchFoodData(foodName = searchText) { result ->
-                if (result is DataResponse.Success) {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            searchedResults = result.apiEdamam?.convertToFoodClass() ?: emptyList(),
-                            searchedResultsState = result
-                        )
-                    }
-                } else {
-                    _uiState.update { currentState ->
-                        currentState.copy(searchedResultsState = result)
-                    }
 
+            val results = repository.fetchFoodData(foodName = searchText)
+
+            if (results is DataResponse.Success) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        searchedResults = results.apiEdamam?.convertToFoodClass() ?: emptyList(),
+                        searchedResultsState = results
+                    )
+                }
+            } else {
+                _uiState.update { currentState ->
+                    currentState.copy(searchedResultsState = results)
                 }
             }
         }
@@ -203,24 +202,24 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            repository.fetchFoodData(foodName = searchedHistoryText) { result ->
-                if (result is DataResponse.Success) {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            searchedResults = result.apiEdamam?.convertToFoodClass() ?: emptyList(),
-                            searchedResultsState = result
-                        )
-                    }
-                } else {
-                    _uiState.update { currentState ->
-                        currentState.copy(searchedResultsState = result)
-                    }
+
+            val results = repository.fetchFoodData(searchedHistoryText)
+
+            if (results is DataResponse.Success) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        searchedResults = results.apiEdamam?.convertToFoodClass() ?: emptyList(),
+                        searchedResultsState = results
+                    )
+                }
+            } else {
+                _uiState.update { currentState ->
+                    currentState.copy(searchedResultsState = results)
                 }
             }
         }
 
         updateSearchHistory(searchedHistoryText)
-
     }
 
     fun onClearSearchedHistoriesClick() {
@@ -307,25 +306,24 @@ class HomeViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            repository.fetchFoodData(
+            val results = repository.fetchFoodData(
                 foodName = _uiState.value.searchText,
                 dietFilter = _uiState.value.dietsFilters.find { it.selected }?.title,
                 dishTypeFilter = _uiState.value.dishTypesFilters.find { it.selected }?.title,
                 mealTypeFilter = _uiState.value.mealTypesFilters.find { it.selected }?.title,
                 cuisineTypeFilter = _uiState.value.cuisineTypeFilters.find { it.selected }?.title
-            ) { result ->
+            )
 
-                if (result is DataResponse.Success) {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            searchedResults = result.apiEdamam?.convertToFoodClass() ?: emptyList(),
-                            searchedResultsState = result
-                        )
-                    }
-                } else {
-                    _uiState.update { currentState ->
-                        currentState.copy(searchedResultsState = result)
-                    }
+            if (results is DataResponse.Success) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        searchedResults = results.apiEdamam?.convertToFoodClass() ?: emptyList(),
+                        searchedResultsState = results
+                    )
+                }
+            } else {
+                _uiState.update { currentState ->
+                    currentState.copy(searchedResultsState = results)
                 }
             }
         }
@@ -340,7 +338,6 @@ class HomeViewModel @Inject constructor(
                 currentState.copy(darkMode = userPreferences.first().showDarkMode)
             }
         }
-
     }
 
     fun onRetryHome() {
