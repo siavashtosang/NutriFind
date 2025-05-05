@@ -1,6 +1,6 @@
 package com.example.nutrifind.ui.features.category
 
-import com.example.nutrifind.data.network.DataResponse
+import com.example.nutrifind.data.remote.network.DataResponse
 
 
 data class CategoryUiState(

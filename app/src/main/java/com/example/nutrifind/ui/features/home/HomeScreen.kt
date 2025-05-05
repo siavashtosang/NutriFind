@@ -66,7 +66,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.nutrifind.R
-import com.example.nutrifind.data.network.DataResponse
+import com.example.nutrifind.data.local.Food
+import com.example.nutrifind.data.local.FoodCategoryItem
+import com.example.nutrifind.data.local.TagFilterItem
+import com.example.nutrifind.data.local.foodCategoryItems
+import com.example.nutrifind.data.remote.network.DataResponse
 import com.example.nutrifind.ui.component.CuisineTypesSheet
 import com.example.nutrifind.ui.component.FiltersSheet
 import com.example.nutrifind.ui.component.FoodCategoryCard
@@ -78,10 +82,6 @@ import com.example.nutrifind.ui.component.SearchedHistoryList
 import com.example.nutrifind.ui.component.TopFoodCard
 import com.example.nutrifind.ui.component.VerticalFoodCard
 import com.example.nutrifind.ui.theme.NutriFindTheme
-import com.example.nutrifind.utils.Food
-import com.example.nutrifind.utils.FoodCategoryItem
-import com.example.nutrifind.utils.TagFilterItem
-import com.example.nutrifind.utils.foodCategoryItems
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -735,7 +735,7 @@ private fun PreViewHomeScreen() {
             },
             foodsSuggestion = emptyList(),
             searchedResultsState = DataResponse.Loading,
-            searchedResults = MutableList(3){
+            searchedResults = MutableList(3) {
                 Food()
             },
             saladList = emptyList(),

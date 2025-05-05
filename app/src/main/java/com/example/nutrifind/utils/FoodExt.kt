@@ -1,61 +1,9 @@
 package com.example.nutrifind.utils
 
-import com.example.nutrifind.R
-import com.example.nutrifind.data.model.ApiEdamam
-import com.example.nutrifind.data.model.Hits
-import com.example.nutrifind.data.model.Ingredients
-
-
-val foodNames: List<String> =
-    listOf(
-        "Pasta",
-        "Spaghetti",
-        "Breakfast",
-        "Burger",
-        "Pizza",
-        "Salads",
-        "Drinks",
-        "Snacks",
-        "Sea food",
-        "Sandwiches",
-        "Ice Cream",
-        "Pie",
-        "Steak",
-        "Fried chicken",
-        "Smoothie",
-        "Cookie",
-        "Fried chicken",
-        "Lasagna",
-        "Omelet",
-        "Muffin"
-    )
-
-val topFoods = listOf(
-    TopFood(title = "Salad", image = R.drawable.img_salad_120),
-    TopFood(title = "Pizza", image = R.drawable.img_pizza_120),
-    TopFood(title = "Chinese", image = R.drawable.img_chinese_120),
-)
-
-data class TopFood(
-    val title: String = "",
-    val image: Int = R.drawable.img_pasta,
-)
-
-data class Nutrition(
-    val name: String,
-    val value: String,
-    val unit: String
-)
-
-data class Food(
-    val recipeUrl: String = "",
-    val name: String = "",
-    val image: String = "",
-    val calories: Int = 0,
-    val serving: Int = 0,
-    val ingredients: List<Ingredients> = emptyList(),
-    val nutrition: List<Nutrition> = emptyList(),
-)
+import com.example.nutrifind.data.local.Food
+import com.example.nutrifind.data.local.Nutrition
+import com.example.nutrifind.data.remote.model.ApiEdamam
+import com.example.nutrifind.data.remote.model.Hits
 
 fun ApiEdamam.convertToFoodClass(): List<Food> {
 
@@ -151,3 +99,4 @@ private fun createNutritionList(hits: Hits?): List<Nutrition> {
         }
     )
 }
+

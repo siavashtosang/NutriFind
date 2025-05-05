@@ -7,8 +7,8 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStore
-import com.example.nutrifind.data.network.ApiService
-import com.example.nutrifind.data.network.DataResponse
+import com.example.nutrifind.data.remote.network.EdamamApi
+import com.example.nutrifind.data.remote.network.DataResponse
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -36,8 +36,8 @@ object PreferencesKeys {
 
 @Singleton
 class NutriFindRepository @Inject constructor(
-    private val apiService: ApiService,
-   @ApplicationContext private val context: Context,
+    private val apiService: EdamamApi,
+    @ApplicationContext private val context: Context,
 ) {
 
     suspend fun fetchFoodData(

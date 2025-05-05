@@ -1,7 +1,7 @@
-package com.example.nutrifind.data.network
+package com.example.nutrifind.di
 
 import com.example.nutrifind.BuildConfig
-import com.example.nutrifind.data.model.ApiEdamam
+import com.example.nutrifind.data.remote.network.EdamamApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -9,8 +9,6 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -21,7 +19,7 @@ object NetworkConfig {
 
 @Module
 @InstallIn(SingletonComponent::class)
-class NetworkModule {
+class ApiModule {
 
 
     @Singleton
@@ -48,24 +46,7 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun nutriFindAPiService(retrofit: Retrofit): ApiService {
-        return retrofit.create(ApiService::class.java)
+    fun edamamAPiService(retrofit: Retrofit): EdamamApi {
+        return retrofit.create(EdamamApi::class.java)
     }
 }
-
-interface ApiService {
-
-    @GET("api/recipes/v2")
-    suspend fun getFoods(
-        @Query("type") type: String = "public",
-        @Query("q") searchFood: String,
-        @Query("app_id") appId: String = BuildConfig.APP_ID,
-        @Query("app_key") appKey: String = BuildConfig.APP_KEY,
-        @Query("diet") dietFilter: String?,
-        @Query("dishType") dishTypeFilter: String?,
-        @Query("mealType") mealTypeFilter: String?,
-        @Query("cuisineType") cuisineTypeFilter: String?
-    ): ApiEdamam
-}
-
-

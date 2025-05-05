@@ -21,8 +21,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.example.nutrifind.R
-import com.example.nutrifind.utils.Food
-import com.example.nutrifind.utils.topFoods
+import com.example.nutrifind.data.local.Food
+import com.example.nutrifind.data.local.topFoods
 import com.example.nutrifind.ui.theme.NutriFindTheme
 import kotlin.math.absoluteValue
 

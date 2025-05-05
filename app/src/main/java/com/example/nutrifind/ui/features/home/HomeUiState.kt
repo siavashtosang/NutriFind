@@ -1,13 +1,13 @@
 package com.example.nutrifind.ui.features.home
 
 import androidx.compose.runtime.Immutable
-import com.example.nutrifind.data.network.DataResponse
-import com.example.nutrifind.utils.Food
-import com.example.nutrifind.utils.TagFilterItem
-import com.example.nutrifind.utils.cuisineTypes
-import com.example.nutrifind.utils.dietsFilterList
-import com.example.nutrifind.utils.dishTypesFilterList
-import com.example.nutrifind.utils.mealTypesFilterList
+import com.example.nutrifind.data.local.Food
+import com.example.nutrifind.data.local.TagFilterItem
+import com.example.nutrifind.data.local.cuisineTypes
+import com.example.nutrifind.data.local.dietsFilterList
+import com.example.nutrifind.data.local.dishTypesFilterList
+import com.example.nutrifind.data.local.mealTypesFilterList
+import com.example.nutrifind.data.remote.network.DataResponse
 
 @Immutable
 data class HomeUiState(

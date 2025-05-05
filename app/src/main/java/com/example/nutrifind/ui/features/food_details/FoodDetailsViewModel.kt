@@ -3,7 +3,7 @@ package com.example.nutrifind.ui.features.food_details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.nutrifind.data.network.DataResponse
+import com.example.nutrifind.data.remote.network.DataResponse
 import com.example.nutrifind.repository.NutriFindRepository
 import com.example.nutrifind.utils.convertToFoodClass
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -4,11 +4,12 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.nutrifind.data.network.DataResponse
+import com.example.nutrifind.data.local.TagFilterItem
+import com.example.nutrifind.data.local.foodNames
+import com.example.nutrifind.data.remote.model.ApiEdamam
+import com.example.nutrifind.data.remote.network.DataResponse
 import com.example.nutrifind.repository.NutriFindRepository
-import com.example.nutrifind.utils.TagFilterItem
 import com.example.nutrifind.utils.convertToFoodClass
-import com.example.nutrifind.utils.foodNames
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -56,8 +57,9 @@ class HomeViewModel @Inject constructor(
             currentState.copy(foodSuggestionTitle = foodSuggestionTitle)
         }
 
-        getFoodSuggestion(foodSuggestionTitle)
-        initializeTopFoods()
+        /* getFoodSuggestion(foodSuggestionTitle)
+         initializeTopFoods()*/
+        _uiState.update { it.copy(results = DataResponse.Success(apiEdamam = ApiEdamam())) }
     }
 
     private suspend fun initializeTopFoods() {

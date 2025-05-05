@@ -50,12 +50,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.nutrifind.R
-import com.example.nutrifind.data.model.Ingredients
-import com.example.nutrifind.data.network.DataResponse
+import com.example.nutrifind.data.local.Food
+import com.example.nutrifind.data.remote.model.Ingredients
+import com.example.nutrifind.data.remote.network.DataResponse
 import com.example.nutrifind.ui.component.NutriFindErrorScreen
 import com.example.nutrifind.ui.component.NutriFindLoadingScreen
 import com.example.nutrifind.ui.theme.NutriFindTheme
-import com.example.nutrifind.utils.Food
 import kotlinx.coroutines.launch
 
 @Composable

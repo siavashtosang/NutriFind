@@ -1,4 +1,4 @@
-package com.example.nutrifind.data.model
+package com.example.nutrifind.data.remote.model
 
 import com.google.gson.annotations.SerializedName
 

@@ -1,6 +1,6 @@
-package com.example.nutrifind.data.network
+package com.example.nutrifind.data.remote.network
 
-import com.example.nutrifind.data.model.ApiEdamam
+import com.example.nutrifind.data.remote.model.ApiEdamam
 
 
 sealed class DataResponse {

@@ -16,6 +16,12 @@ class MainViewModel @Inject constructor(
     private val repository: NutriFindRepository
 ) : ViewModel() {
 
+    init {
+        viewModelScope.launch {
+            repository.fetchInitialUserPreferences()
+        }
+    }
+
     val isDarkTheme: StateFlow<Boolean> =
         repository.userPreferencesFlow
             .map { prefs -> prefs.showDarkMode }
@@ -25,9 +31,4 @@ class MainViewModel @Inject constructor(
                 initialValue = false
             )
 
-    init {
-        viewModelScope.launch {
-            repository.fetchInitialUserPreferences()
-        }
-    }
 }

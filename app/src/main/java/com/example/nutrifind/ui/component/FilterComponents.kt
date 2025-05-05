@@ -45,11 +45,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.nutrifind.R
-import com.example.nutrifind.utils.TagFilterItem
-import com.example.nutrifind.utils.cuisineTypes
-import com.example.nutrifind.utils.dietsFilterList
-import com.example.nutrifind.utils.dishTypesFilterList
-import com.example.nutrifind.utils.mealTypesFilterList
+import com.example.nutrifind.data.local.TagFilterItem
+import com.example.nutrifind.data.local.cuisineTypes
+import com.example.nutrifind.data.local.dietsFilterList
+import com.example.nutrifind.data.local.dishTypesFilterList
+import com.example.nutrifind.data.local.mealTypesFilterList
 import com.example.nutrifind.ui.theme.NutriFindTheme
 
 
