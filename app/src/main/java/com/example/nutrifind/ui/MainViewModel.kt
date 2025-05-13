@@ -2,7 +2,6 @@ package com.example.nutrifind.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.nutrifind.data.repositories.DefaultNutriFindRepository
 import com.example.nutrifind.data.repositories.NutriFindRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
