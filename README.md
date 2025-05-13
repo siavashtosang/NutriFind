@@ -65,6 +65,11 @@ APP_KEY = b5a9932ceec96638ae9e30ea128926ba
 ### 🔍 Details Feature
 <img src="https://github.com/user-attachments/assets/27415037-9ec3-48ff-a2c0-f83848a9fdff" width="300"/>---
 
+## 🎨 UI/UX Design
+Special thanks to Mehdi Sharifimanesh for the stunning UI/UX designs.
+
+Dribbble: https://dribbble.com/mahdisharifimanesh
+
 ## 👨‍💼 About Me
 
 Hi, I'm **Siavash Tosang**, an Android Developer passionate about building beautiful and functional mobile apps. 👩‍💻
