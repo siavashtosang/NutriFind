@@ -56,6 +56,7 @@ import com.example.nutrifind.data.remote.network.DataResponse
 import com.example.nutrifind.ui.component.NutriFindErrorScreen
 import com.example.nutrifind.ui.component.NutriFindLoadingScreen
 import com.example.nutrifind.ui.theme.NutriFindTheme
+import com.example.nutrifind.utils.convertToFoodClass
 import kotlinx.coroutines.launch
 
 @Composable
@@ -70,13 +71,11 @@ fun FoodDetailsScreenRout(
     val scope = rememberCoroutineScope()
 
     val intent = Intent(Intent.ACTION_VIEW)
-    intent.data = Uri.parse(uiState.food.recipeUrl)
 
-
-    when (uiState.results) {
+    when (uiState.foodResults) {
         is DataResponse.Error -> {
             NutriFindErrorScreen(
-                message = (uiState.results as DataResponse.Error).message,
+                message = (uiState.foodResults as DataResponse.Error).message,
                 onRetry = viewModel::onRetry
             )
         }
@@ -86,16 +85,26 @@ fun FoodDetailsScreenRout(
         }
 
         is DataResponse.Success -> {
-            FoodDetailsScreen(
-                modifier = modifier,
-                food = uiState.food,
-                onFoodRecipeClick = {
-                    scope.launch {
-                        context.startActivity(intent)
-                    }
-                },
-                onBackButtonClick = onBackButtonClick
-            )
+
+            val foods =
+                (uiState.foodResults as DataResponse.Success).apiEdamam?.convertToFoodClass()
+                    ?: emptyList()
+
+            val foundFood = foods.find { it.name == uiState.selectedFood }
+
+            if (foundFood != null) {
+                FoodDetailsScreen(
+                    modifier = modifier,
+                    food = foundFood,
+                    onFoodRecipeClick = {
+                        scope.launch {
+                            intent.data = Uri.parse(foundFood.recipeUrl)
+                            context.startActivity(intent)
+                        }
+                    },
+                    onBackButtonClick = onBackButtonClick
+                )
+            }
         }
     }
 }

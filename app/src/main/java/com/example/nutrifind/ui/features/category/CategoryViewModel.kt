@@ -4,8 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nutrifind.data.remote.network.DataResponse
-import com.example.nutrifind.data.repositories.DefaultNutriFindRepository
+import com.example.nutrifind.data.repositories.NutriFindRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CategoryViewModel @Inject constructor(
-    private val repository: DefaultNutriFindRepository,
+    private val repository: NutriFindRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -36,14 +37,16 @@ class CategoryViewModel @Inject constructor(
         }
     }
 
-    private suspend fun searchFood(foodName: String) {
+    private fun searchFood(foodName: String) {
+        viewModelScope.launch {
 
-        val results = repository.fetchFoodData(foodName = foodName)
+            val results = async { repository.fetchFoodData(foodName = foodName) }
 
-        _uiState.update { it.copy(results = DataResponse.Loading) }
+            _uiState.update { it.copy(results = DataResponse.Loading) }
 
-        _uiState.update { currentState ->
-            currentState.copy(results = results)
+            _uiState.update { currentState ->
+                currentState.copy(results = results.await())
+            }
         }
     }
 

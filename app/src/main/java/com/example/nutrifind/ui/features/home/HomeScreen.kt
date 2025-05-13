@@ -1,6 +1,7 @@
 package com.example.nutrifind.ui.features.home
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -82,6 +83,7 @@ import com.example.nutrifind.ui.component.SearchedHistoryList
 import com.example.nutrifind.ui.component.TopFoodCard
 import com.example.nutrifind.ui.component.VerticalFoodCard
 import com.example.nutrifind.ui.theme.NutriFindTheme
+import com.example.nutrifind.utils.convertToFoodClass
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -97,18 +99,23 @@ fun HomeScreenRote(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    when (uiState.results) {
-        is DataResponse.Error -> {
+    when {
+
+        uiState.suggestionResults is DataResponse.Error || uiState.saladsResults is DataResponse.Error || uiState.pizzasResults is DataResponse.Error || uiState.chineseResults is DataResponse.Error -> {
             NutriFindErrorScreen(
                 onRetry = viewModel::onRetryHome
             )
+            Log.i("SiaTag", "home screen data is Error")
         }
 
-        DataResponse.Loading -> {
+        uiState.suggestionResults is DataResponse.Loading || uiState.saladsResults is DataResponse.Loading || uiState.pizzasResults is DataResponse.Loading || uiState.chineseResults is DataResponse.Loading -> {
             NutriFindLoadingScreen()
+            Log.i("SiaTag", "home screen data is loading")
         }
 
-        is DataResponse.Success -> {
+        uiState.suggestionResults is DataResponse.Success && uiState.saladsResults is DataResponse.Success && uiState.pizzasResults is DataResponse.Success && uiState.chineseResults is DataResponse.Success -> {
+            Log.i("SiaTag", "home screen data is success")
+
             HomeScreen(
                 modifier = modifier,
                 isDarkTheme = uiState.darkMode,
@@ -116,12 +123,15 @@ fun HomeScreenRote(
                 foodsSuggestionTitle = uiState.foodSuggestionTitle,
                 isActiveSearchBar = uiState.isActiveSearchBar,
                 searchedHistories = uiState.searchHistory,
-                foodsSuggestion = uiState.foodsSuggestion,
-                searchedResultsState = uiState.searchedResultsState,
+                foodsSuggestion = (uiState.suggestionResults as DataResponse.Success).apiEdamam?.convertToFoodClass()
+                    ?: emptyList(),
                 searchedResults = uiState.searchedResults,
-                saladList = uiState.salads,
-                pizzaList = uiState.pizzas,
-                chineseList = uiState.chinese,
+                saladsResults = (uiState.saladsResults as DataResponse.Success).apiEdamam?.convertToFoodClass()
+                    ?: emptyList(),
+                pizzasResults = (uiState.pizzasResults as DataResponse.Success).apiEdamam?.convertToFoodClass()
+                    ?: emptyList(),
+                chineseResults = (uiState.chineseResults as DataResponse.Success).apiEdamam?.convertToFoodClass()
+                    ?: emptyList(),
                 dietsFilterList = uiState.dietsFilters,
                 dishTypesFilterList = uiState.dishTypesFilters,
                 mealTypesFilterList = uiState.mealTypesFilters,
@@ -148,6 +158,7 @@ fun HomeScreenRote(
             )
 
         }
+
     }
 }
 
@@ -162,11 +173,10 @@ fun HomeScreen(
     filterItems: Int?,
     searchedHistories: List<SearchedHistory>,
     foodsSuggestion: List<Food>,
-    searchedResultsState: DataResponse,
-    searchedResults: List<Food>,
-    saladList: List<Food>,
-    pizzaList: List<Food>,
-    chineseList: List<Food>,
+    searchedResults: DataResponse,
+    saladsResults: List<Food>,
+    pizzasResults: List<Food>,
+    chineseResults: List<Food>,
     dietsFilterList: List<TagFilterItem>,
     dishTypesFilterList: List<TagFilterItem>,
     mealTypesFilterList: List<TagFilterItem>,
@@ -288,9 +298,9 @@ fun HomeScreen(
                             onAllCategoriesClick = onAllCategoriesClick,
                             onMoreCategoriesButtonClick = onMoreCategoriesButtonClick,
                             foodsSuggestion = foodsSuggestion,
-                            saladList = saladList,
-                            pizzaList = pizzaList,
-                            chineseList = chineseList,
+                            saladList = saladsResults,
+                            pizzaList = pizzasResults,
+                            chineseList = chineseResults,
                             onFoodCardClick = onFoodCardClick,
                         )
                     }
@@ -311,7 +321,6 @@ fun HomeScreen(
                         isActiveSearchBar = isActiveSearchBar,
                         searchedHistory = searchedHistories,
                         filterItems = filterItems,
-                        searchedResultsState = searchedResultsState,
                         searchResults = searchedResults,
                         onSearchTextChange = onSearchTextChange,
                         onSearchTriggered = onSearchTriggered,
@@ -419,8 +428,7 @@ private fun HomeScreenSearchBar(
     isActiveSearchBar: Boolean,
     selectedCuisineType: String,
     filterItems: Int?,
-    searchedResultsState: DataResponse,
-    searchResults: List<Food>,
+    searchResults: DataResponse,
     searchedHistory: List<SearchedHistory>,
     dietsFilterList: List<TagFilterItem>,
     dishTypesFilterList: List<TagFilterItem>,
@@ -495,10 +503,10 @@ private fun HomeScreenSearchBar(
             if (isActiveSearchBar) {
                 if (showSearchResult) {
 
-                    when (searchedResultsState) {
+                    when (searchResults) {
                         is DataResponse.Error -> {
                             NutriFindErrorScreen(
-                                message = searchedResultsState.message,
+                                message = searchResults.message,
                                 onRetry = onSearchRetry
                             )
                         }
@@ -511,7 +519,8 @@ private fun HomeScreenSearchBar(
                             Box {
                                 SearchResults(
                                     searchedFood = searchText,
-                                    searchResults = searchResults,
+                                    searchResults = searchResults.apiEdamam?.convertToFoodClass()
+                                        ?: emptyList(),
                                     filterItems = filterItems,
                                     onSearchedFoodCardClick = onFoodCardClick,
                                     onFilterButtonClick = {
@@ -734,13 +743,10 @@ private fun PreViewHomeScreen() {
                 SearchedHistory(searchedText = "Hot Dog", searchTime = "Today")
             },
             foodsSuggestion = emptyList(),
-            searchedResultsState = DataResponse.Loading,
-            searchedResults = MutableList(3) {
-                Food()
-            },
-            saladList = emptyList(),
-            pizzaList = emptyList(),
-            chineseList = emptyList(),
+            searchedResults = DataResponse.Loading,
+            saladsResults = emptyList(),
+            pizzasResults = emptyList(),
+            chineseResults = emptyList(),
             dietsFilterList = emptyList(),
             dishTypesFilterList = emptyList(),
             mealTypesFilterList = emptyList(),

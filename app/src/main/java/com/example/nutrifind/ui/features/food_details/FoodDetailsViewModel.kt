@@ -4,9 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nutrifind.data.remote.network.DataResponse
-import com.example.nutrifind.data.repositories.DefaultNutriFindRepository
-import com.example.nutrifind.utils.convertToFoodClass
+import com.example.nutrifind.data.repositories.NutriFindRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FoodDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val repository: DefaultNutriFindRepository,
+    private val repository: NutriFindRepository,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<FoodDetailsUiState> =
@@ -32,19 +32,23 @@ class FoodDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             selectedFoodNameFlow.collectLatest {
                 searchFood(foodName = it)
-                findSelectedFood(selectedFoodName = it)
+                _uiState.update { currentState ->
+                    currentState.copy(selectedFood = it)
+                }
             }
         }
     }
 
-    private suspend fun searchFood(foodName: String) {
+    private fun searchFood(foodName: String) {
+        viewModelScope.launch {
 
-        val results = repository.fetchFoodData(foodName = foodName)
+            _uiState.update { it.copy(foodResults = DataResponse.Loading) }
 
-        _uiState.update { it.copy(results = DataResponse.Loading) }
+            val results = async { repository.fetchFoodData(foodName = foodName) }
 
-        _uiState.update { currentState ->
-            currentState.copy(results = results)
+            _uiState.update { currentState ->
+                currentState.copy(foodResults = results.await())
+            }
         }
     }
 
@@ -52,29 +56,7 @@ class FoodDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             selectedFoodNameFlow.collectLatest {
                 searchFood(foodName = it)
-                findSelectedFood(selectedFoodName = it)
             }
-        }
-    }
-
-    private fun findSelectedFood(selectedFoodName: String) {
-
-        val currentResult = _uiState.value.results
-
-        if (currentResult is DataResponse.Success) {
-            val foods = currentResult.apiEdamam?.convertToFoodClass()
-            val findFood = foods?.find { food -> food.name == selectedFoodName }
-
-            if (findFood != null) {
-                _uiState.update { currentState ->
-                    currentState.copy(food = findFood)
-                }
-
-            } else {
-                _uiState.update { it.copy(results = DataResponse.Error(message = "Food not found")) }
-            }
-        } else {
-            _uiState.update { it.copy(results = DataResponse.Error(message = "No data available")) }
         }
     }
 }
